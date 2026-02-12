@@ -1,0 +1,166 @@
+@if (!isMobile()) {
+<!-- ═══ Desktop: Toolbar + Table ═══ -->
+<div class="desktop-toolbar">
+  <span class="text-sm text-surface-500">
+    <span class="font-semibold text-surface-700">{{ data.length }}</span>
+    <span> registros</span>
+  </span>
+  <div class="flex items-center gap-2">
+    <p-iconfield>
+      <p-inputicon styleClass="pi pi-search" />
+      <input pInputText type="text" [value]="globalFilterValue()" (input)="onGlobalFilter($event)"
+        placeholder="Buscar..." class="p-inputtext-sm" style="width: 220px" />
+    </p-iconfield>
+    <p-select [options]="groupOptions()" [ngModel]="groupByField()" (ngModelChange)="groupByField.set($event)"
+      optionLabel="label" optionValue="value" placeholder="Agrupar por" styleClass="p-select-sm"
+      style="min-width: 160px" />
+    <p-multiSelect [options]="columns" [(ngModel)]="selectedColumns" optionLabel="header" placeholder="Colunas"
+      [maxSelectedLabels]="0" selectedItemsLabel="{0} colunas" (onChange)="onColumnToggle($event.value)"
+      styleClass="p-multiselect-sm" />
+    <p-button icon="pi pi-filter-slash" [outlined]="true" severity="secondary" size="small" pTooltip="Limpar filtros"
+      tooltipPosition="bottom" (onClick)="clearFilters()" />
+    <p-button icon="pi pi-download" [outlined]="true" severity="secondary" size="small" pTooltip="Exportar CSV"
+      tooltipPosition="bottom" (onClick)="exportCSV()" />
+  </div>
+</div>
+
+@if (groupByField()) {
+<!-- Grouped table (manual grouping) -->
+<p-table #dt [value]="groupedData()" [columns]="visibleColumns()" [loading]="loading" [scrollable]="true"
+  scrollHeight="flex" [tableStyle]="{ 'min-width': '60rem' }" [exportFilename]="title || 'export'"
+  styleClass="p-datatable-sm has-toolbar">
+
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      @for (col of columns; track col.field) {
+      <th [style]="getColumnStyle(col)">{{ col.header }}</th>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-row let-columns="columns">
+    @if (isGroupHeader(row)) {
+    <tr class="group-header-row" (click)="toggleGroup($any(row)._groupValue)" style="cursor: pointer;">
+      <td [attr.colspan]="visibleColumns().length">
+        <i class="pi" [ngClass]="expandedGroups().has($any(row)._groupValue) ? 'pi-chevron-down' : 'pi-chevron-right'"
+          style="font-size: 0.75rem; margin-right: 0.5rem;"></i>
+        <span class="font-semibold">{{ getGroupLabel() }}:</span>
+        <span class="ml-2">{{ $any(row)._groupValue || '(vazio)' }}</span>
+        <span class="ml-2 text-surface-400" style="font-size: 0.75rem;">({{ $any(row)._groupCount }})</span>
+      </td>
+    </tr>
+    } @else {
+    <tr>
+      @for (col of columns; track col.field) {
+      <td [style]="getColumnStyle(col)">{{ getCellValue(row, col) }}</td>
+      }
+    </tr>
+    }
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td [attr.colspan]="visibleColumns().length" style="text-align: center; padding: 3rem 1rem;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+          <i class="pi pi-inbox" style="font-size: 2rem; color: var(--v-text-muted);"></i>
+          <span style="color: var(--v-text-secondary); font-size: 0.875rem;">Nenhum registro encontrado</span>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+} @else {
+<!-- Normal table (no grouping) -->
+<p-table #dt [value]="data" [columns]="visibleColumns()" [loading]="loading" [globalFilterFields]="getFilterFields()"
+  [scrollable]="true" scrollHeight="flex" [resizableColumns]="config.resizableColumns || false"
+  [reorderableColumns]="true" [showGridlines]="config.showGridlines || false"
+  [stripedRows]="config.stripedRows || false" [tableStyle]="{ 'min-width': '60rem' }"
+  (onRowSelect)="rowSelect.emit($any($event).data)" (onRowDblClick)="rowDblClick.emit($any($event).data)"
+  (onColReorder)="onColReorder($event)" [exportFilename]="title || 'export'" styleClass="p-datatable-sm has-toolbar">
+
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      @for (col of columns; track col.field) {
+      <th pReorderableColumn [pSortableColumn]="col.sortable !== false ? col.field : undefined"
+        [style]="getColumnStyle(col)">
+        {{ col.header }}
+        @if (col.sortable !== false) { <p-sortIcon [field]="col.field" /> }
+      </th>
+      }
+    </tr>
+    <tr>
+      @for (col of columns; track col.field) {
+      <th [style]="getColumnStyle(col)">
+        @if (col.filterable !== false) {
+        @switch (col.filterType) {
+        @case ('numeric') { <p-columnFilter type="numeric" [field]="col.field" display="menu" /> }
+        @case ('date') { <p-columnFilter type="date" [field]="col.field" display="menu" /> }
+        @default {
+        <p-columnFilter type="text" [field]="col.field" [matchMode]="'contains'" [showMenu]="false">
+          <ng-template pTemplate="filter" let-value let-filterCallback="filterCallback">
+            <input pInputText type="text" class="p-inputtext-sm" style="width: 100%" [value]="value"
+              (input)="filterCallback($any($event.target).value)" placeholder="Filtrar..." />
+          </ng-template>
+        </p-columnFilter>
+        }
+        }
+        }
+      </th>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-row let-columns="columns">
+    <tr>
+      @for (col of columns; track col.field) {
+      <td [style]="getColumnStyle(col)">{{ getCellValue(row, col) }}</td>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td [attr.colspan]="visibleColumns().length" style="text-align: center; padding: 3rem 1rem;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+          <i class="pi pi-inbox" style="font-size: 2rem; color: var(--v-text-muted);"></i>
+          <span style="color: var(--v-text-secondary); font-size: 0.875rem;">Nenhum registro encontrado</span>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+}
+} @else {
+<!-- ═══ Mobile: Card list ═══ -->
+<div class="mobile-grid">
+  <div class="mobile-toolbar">
+    <p-iconfield class="flex-1">
+      <p-inputicon styleClass="pi pi-search" />
+      <input pInputText type="text" [value]="globalFilterValue()" (input)="onCardFilter($any($event.target).value)"
+        placeholder="Buscar..." class="p-inputtext-sm w-full" />
+    </p-iconfield>
+    <span class="text-xs text-surface-500 whitespace-nowrap">
+      {{ filteredData().length }} registros
+    </span>
+  </div>
+
+  <div class="mobile-cards">
+    @for (row of filteredData(); track $index) {
+    <div class="mobile-card" tabindex="0" role="button" (click)="rowSelect.emit(row)"
+      (keyup.enter)="rowSelect.emit(row)">
+      @for (col of visibleColumns(); track col.field) {
+      <div class="mobile-card-field">
+        <span class="mobile-card-label">{{ col.header }}</span>
+        <span class="mobile-card-value">{{ getCellValue(row, col) }}</span>
+      </div>
+      }
+    </div>
+    } @empty {
+    <div class="mobile-empty">
+      <i class="pi pi-inbox text-4xl text-surface-400 block mb-3"></i>
+      <p class="text-surface-500 m-0">Nenhum registro encontrado</p>
+    </div>
+    }
+  </div>
+</div>
+}

@@ -1,0 +1,31 @@
+export interface Ticket {
+  id: string;
+  ref: string;
+  created_at: string;
+  ticket_number_teorema: string;
+  expected_date: string | null;
+  summary: string | null;
+  situation: string;
+  type: string;
+  problem: string;
+  estimated_effort: number | null;
+  commercial_estimated_effort: number | null;
+  view_index: number | null;
+  priority: number;
+  project: string | null;
+  issue: string | null;
+  phase: string | null;
+  sprint: string | null;
+  analysis_expected_date: string | null;
+  development_expected_date: string | null;
+  urgent: number;
+  status: string;
+  ticket_type: string;
+  ticket_tags: string[];
+  tasks: unknown[];
+  customer_name: string;
+  system: string;
+  developer: string | null;
+  responsible: string;
+  count_documents: number;
+}

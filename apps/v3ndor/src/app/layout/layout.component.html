@@ -1,0 +1,124 @@
+<div class="layout" [class.sidebar-collapsed]="sidebarCollapsed()">
+  <!-- Mobile backdrop -->
+  @if (mobileMenuOpen()) {
+  <div class="mobile-backdrop" (click)="closeMobileMenu()" (keyup.escape)="closeMobileMenu()" tabindex="0" role="button"
+    aria-label="Fechar menu"></div>
+  }
+
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.mobile-open]="mobileMenuOpen()">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-icon">
+          <i class="pi pi-bolt"></i>
+        </div>
+        @if (!sidebarCollapsed()) {
+        <span class="logo-text">V3ndor</span>
+        }
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      @for (item of navItems; track item.label) {
+      @if (item.children) {
+      <div class="nav-group" [class.collapsed-flyout]="sidebarCollapsed()">
+        <button class="nav-item nav-parent" [class.active]="isParentActive(item)" (click)="toggleMenu(item.label)"
+          [title]="item.label">
+          <i [class]="item.icon"></i>
+          @if (!sidebarCollapsed()) {
+          <span>{{ item.label }}</span>
+          <i class="pi nav-chevron" [class.pi-chevron-down]="expandedMenus().has(item.label)"
+            [class.pi-chevron-right]="!expandedMenus().has(item.label)"></i>
+          }
+        </button>
+        @if (!sidebarCollapsed() && expandedMenus().has(item.label)) {
+        <div class="nav-children">
+          @for (child of item.children; track child.route) {
+          <a class="nav-item nav-child" [routerLink]="child.route" routerLinkActive="active" (click)="closeMobileMenu()"
+            [title]="child.label">
+            <i [class]="child.icon"></i>
+            <span>{{ child.label }}</span>
+          </a>
+          }
+        </div>
+        }
+        @if (sidebarCollapsed()) {
+        <div class="nav-flyout">
+          <div class="nav-flyout-title">{{ item.label }}</div>
+          @for (child of item.children; track child.route) {
+          <a class="nav-flyout-item" [routerLink]="child.route" routerLinkActive="active" (click)="closeMobileMenu()">
+            <i [class]="child.icon"></i>
+            <span>{{ child.label }}</span>
+          </a>
+          }
+        </div>
+        }
+      </div>
+      } @else {
+      <a class="nav-item" [routerLink]="item.route" routerLinkActive="active" (click)="closeMobileMenu()"
+        [title]="item.label">
+        <i [class]="item.icon"></i>
+        @if (!sidebarCollapsed()) {
+        <span>{{ item.label }}</span>
+        }
+      </a>
+      }
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="collapse-btn" (click)="toggleSidebar()" title="Recolher menu">
+        <i [class]="sidebarCollapsed() ? 'pi pi-angle-right' : 'pi pi-angle-left'"></i>
+        @if (!sidebarCollapsed()) {
+        <span>Recolher</span>
+        }
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main area -->
+  <div class="main-area">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <button class="menu-toggle" (click)="toggleMobileMenu()">
+          <i class="pi pi-bars"></i>
+        </button>
+      </div>
+
+      <div class="header-right">
+        @if (authService.selectedCompanyGroup(); as group) {
+        <div class="header-company">
+          <i class="pi pi-building"></i>
+          <span>{{ group.name }}</span>
+        </div>
+        }
+
+        <button class="theme-toggle" (click)="themeService.toggle()"
+          [title]="themeService.isDark() ? 'Modo claro' : 'Modo escuro'">
+          <i [class]="themeService.isDark() ? 'pi pi-sun' : 'pi pi-moon'"></i>
+        </button>
+
+        <div class="header-divider"></div>
+
+        @if (authService.currentUser(); as user) {
+        <div class="header-user">
+          <div class="user-avatar">
+            {{ user.name.charAt(0).toUpperCase() }}
+          </div>
+          <span class="user-name">{{ user.name }}</span>
+        </div>
+        }
+
+        <button class="logout-btn" (click)="logout()" title="Sair">
+          <i class="pi pi-sign-out"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

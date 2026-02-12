@@ -1,0 +1,48 @@
+<div class="select-page">
+  <div class="select-card">
+    <div class="select-header">
+      <div class="logo-icon">
+        <i class="pi pi-building"></i>
+      </div>
+      <h1>Selecione o Grupo Empresarial</h1>
+      <p>Escolha o grupo empresarial para acessar o sistema</p>
+    </div>
+
+    <div class="groups-list">
+      @for (group of companyGroups(); track group.id) {
+      <div class="group-item" [class.selected]="selectedGroup()?.id === group.id" (click)="selectGroup(group)"
+        (keyup.enter)="selectGroup(group)" (keyup.space)="selectGroup(group)" tabindex="0" role="button"
+        [attr.aria-pressed]="selectedGroup()?.id === group.id">
+        <div class="group-icon">
+          <i class="pi pi-building"></i>
+        </div>
+        <div class="group-info">
+          <span class="group-name">{{ group.name }}</span>
+          <span class="group-alias">{{ group.alias }}</span>
+          @if (group.ref) {
+          <span class="group-ref">Ref: {{ group.ref }}</span>
+          }
+        </div>
+        <div class="group-check">
+          @if (selectedGroup()?.id === group.id) {
+          <i class="pi pi-check-circle"></i>
+          } @else {
+          <i class="pi pi-circle"></i>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <div class="select-actions">
+      <button class="btn-back" (click)="logout()">
+        <i class="pi pi-arrow-left"></i>
+        Voltar
+      </button>
+      <button class="btn-confirm" [disabled]="!selectedGroup()" (click)="confirm()">
+        Confirmar
+        <i class="pi pi-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
