@@ -11,6 +11,7 @@ export interface GridColumn {
   frozen?: boolean;
   align?: 'left' | 'center' | 'right';
   format?: (value: unknown) => string;
+  htmlFormat?: (value: unknown, row: Record<string, unknown>) => string;
 }
 
 export interface GridConfig {

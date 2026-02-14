@@ -1,0 +1,135 @@
+// Estilos globais para todos os modais p-dialog
+::ng-deep .p-dialog {
+  border: none !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+
+  // Dark mode para modais - usando seletor .dark do PrimeNG
+  :root.dark &,
+  .dark & {
+    background: var(--p-surface-0);
+    color: var(--p-text-color);
+
+    .p-dialog-header {
+      background: var(--p-surface-0);
+      border-bottom: 1px solid var(--p-content-border-color);
+      color: var(--p-text-color);
+    }
+
+    .p-dialog-content {
+      background: var(--p-surface-0);
+      color: var(--p-text-color);
+    }
+
+    .p-dialog-footer {
+      background: var(--p-surface-50);
+      border-top: 1px solid var(--p-content-border-color);
+    }
+
+    .p-dialog-title {
+      color: var(--p-text-color);
+    }
+
+    .p-dialog-header-icons {
+      .p-dialog-header-close {
+        color: var(--p-text-muted-color);
+
+        &:hover {
+          color: var(--p-text-color);
+          background: var(--p-surface-100);
+        }
+      }
+    }
+  }
+}
+
+// Dark mode para overlay do modal
+::ng-deep .p-dialog-mask {
+
+  :root.dark &,
+  .dark & {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+}
+
+// Garantir que calendários fiquem acima de todos os elementos
+::ng-deep .p-datepicker {
+  z-index: 1100 !important;
+
+  // Dark mode para datepicker
+  :root.dark &,
+  .dark & {
+    background: var(--p-surface-0);
+    border: 1px solid var(--p-content-border-color);
+    color: var(--p-text-color);
+
+    .p-datepicker-header {
+      background: var(--p-surface-100);
+      border-bottom: 1px solid var(--p-content-border-color);
+      color: var(--p-text-color);
+    }
+
+    .p-datepicker-calendar {
+      .p-datepicker-day {
+        color: var(--p-text-color);
+
+        &:hover {
+          background: var(--p-surface-100);
+        }
+
+        &.p-highlight {
+          background: var(--p-primary-color);
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+::ng-deep .p-datepicker-panel {
+  z-index: 1100 !important;
+}
+
+// Dark mode para selects dropdowns
+::ng-deep .p-select-overlay {
+
+  :root.dark &,
+  .dark & {
+    background: var(--p-surface-0);
+    border: 1px solid var(--p-content-border-color);
+    color: var(--p-text-color);
+
+    .p-select-list {
+      .p-select-option {
+        color: var(--p-text-color);
+
+        &:hover {
+          background: var(--p-surface-100);
+        }
+
+        &.p-select-option-selected {
+          background: var(--p-primary-color);
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+// Dark mode para confirmação dialog
+::ng-deep .p-confirm-dialog {
+
+  :root.dark &,
+  .dark & {
+    background: var(--p-surface-0);
+    color: var(--p-text-color);
+
+    .p-confirm-dialog-message {
+      color: var(--p-text-color);
+    }
+
+    .p-confirm-dialog-footer {
+      background: var(--p-surface-50);
+      border-top: 1px solid var(--p-content-border-color);
+    }
+  }
+}

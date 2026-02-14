@@ -1,0 +1,207 @@
+<p-dialog header="Gerenciar Apontamentos - #{{ ticket.ticket_number_teorema }}" [(visible)]="visible" [modal]="true"
+  [draggable]="false" [resizable]="false"
+  [style]="{ width: '90vw', 'max-width': '850px', height: '90vh', 'max-height': '90vh', 'z-index': 1100 }"
+  [breakpoints]="{ '768px': '95vw', '480px': '100vw' }" (onHide)="onHide()"
+  [contentStyle]="{ padding: '0', height: 'calc(90vh - 130px)', 'overflow': 'auto' }">
+
+  <!-- Abas do Modal -->
+  <div class="modal-tabs">
+    <button class="tab-button" [class.active]="activeTab() === 'new'" (click)="showNewForm()">
+      <i class="pi pi-clock"></i>
+      Apontamento
+    </button>
+    <button class="tab-button" [class.active]="activeTab() === 'history'" (click)="showHistory()">
+      <i class="pi pi-history"></i>
+      Histórico ({{ ticketTimeEntries.length }})
+    </button>
+  </div>
+
+  <!-- Conteúdo Dinâmico com Rolagem -->
+  <div class="modal-content-wrapper">
+    @if (activeTab() === 'new') {
+    <div class="time-entry-form">
+      <div class="form-grid">
+        <div class="col-12">
+          <div class="field-group">
+            <span class="field-label">
+              Descrição
+              @if (activeTimeEntry) {
+              <span class="required">*</span>
+              }
+            </span>
+            <textarea pTextarea [autoResize]="true" [rows]="4"
+              placeholder="Descreva detalhadamente as atividades realizadas..." [ngModel]="timeEntryDescription()"
+              (ngModelChange)="timeEntryDescription.set($event)" class="w-full"></textarea>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="field-group">
+            <span class="field-label">
+              Tipo
+              <span class="required">*</span>
+            </span>
+            <p-select [options]="timeTypes" [(ngModel)]="timeEntryType" optionLabel="label" optionValue="value"
+              placeholder="Selecione o tipo" class="w-full" [style]="{ 'z-index': 1000 }" />
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="field-group">
+            <span class="field-label">
+              Atendimento
+              <span class="required">*</span>
+            </span>
+            <p-select [options]="attendanceTypes" [(ngModel)]="timeEntryAttendanceType" optionLabel="label"
+              optionValue="value" placeholder="Selecione o atendimento" class="w-full" [style]="{ 'z-index': 999 }" />
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="field-group">
+            <span class="field-label">
+              Status
+              <span class="required">*</span>
+            </span>
+            <p-select [options]="statusOptions()" [(ngModel)]="timeEntryStatusId" optionLabel="label"
+              optionValue="value" placeholder="Selecione o status" class="w-full" [style]="{ 'z-index': 1002 }" />
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="field-group">
+            <span class="field-label">
+              Tarefa
+            </span>
+            <p-select [options]="taskOptions()" [(ngModel)]="timeEntryTaskId" optionLabel="label" optionValue="value"
+              placeholder="Selecione a tarefa (opcional)" class="w-full" [style]="{ 'z-index': 997 }" />
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="field-group">
+            <span class="field-label">
+              Início
+              <span class="required">*</span>
+            </span>
+            <p-datepicker [(ngModel)]="timeEntryStartDate" [showTime]="true" [showSeconds]="false"
+              placeholder="Data e hora" class="w-full" [style]="{ 'z-index': 1003 }" />
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="field-group">
+            <span class="field-label">
+              Fim
+            </span>
+            <p-datepicker [(ngModel)]="timeEntryEndDate" [showTime]="true" [showSeconds]="false"
+              placeholder="Data e hora" class="w-full" [style]="{ 'z-index': 1003 }" />
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+
+    @if (activeTab() === 'history') {
+    <div class="timeentries-content">
+      <!-- Apontamento Ativo -->
+      @if (activeTimeEntry; as activeEntry) {
+      <div class="active-time-entry-card">
+        <div class="active-time-entry-header">
+          <i class="pi pi-clock"></i>
+          <span>Apontamento em Andamento</span>
+        </div>
+        <div class="active-time-entry-details">
+          <div class="detail-row">
+            <span class="label">Descrição:</span>
+            <span class="value">{{ activeEntry.description }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Início:</span>
+            <span class="value">{{ formatDate(activeEntry.start_date || '') }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Tipo:</span>
+            <span class="value">{{ activeEntry.type }}</span>
+          </div>
+        </div>
+        <div class="active-time-entry-actions">
+          <p-button icon="pi pi-stop" label="Encerrar Apontamento" severity="danger" size="small"
+            (onClick)="stopTimeEntry()" />
+        </div>
+      </div>
+      }
+
+      <!-- Listagem de Apontamentos -->
+      <div class="timeentries-list">
+        <div class="list-header">
+          <h4>Histórico Completo</h4>
+        </div>
+
+        @if (ticketTimeEntries.length > 0) {
+        <div class="timeentries-grid">
+          @for (entry of ticketTimeEntries; track entry.id) {
+          <div class="timeentry-card" [class.active]="!entry.end_date">
+            <div class="entry-header">
+              <span class="entry-type">{{ entry.type }}</span>
+              <span class="entry-date">{{ formatDate(entry.start_date || '') }}</span>
+            </div>
+            <div class="entry-description">{{ entry.description || 'Sem descrição' }}</div>
+
+            <!-- Informações adicionais -->
+            <div class="entry-details">
+              <div class="detail-row">
+                <span class="detail-label">Usuário:</span>
+                <span class="detail-value">{{ entry.user?.name || 'Não informado' }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Atendimento:</span>
+                <span class="detail-value">{{ entry.attendance_type || 'Não informado' }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Departamento:</span>
+                <span class="detail-value">{{ entry.department_type || 'Não informado' }}</span>
+              </div>
+              @if (entry.task?.description) {
+              <div class="detail-row">
+                <span class="detail-label">Tarefa:</span>
+                <span class="detail-value">{{ entry.task?.description || '' }}</span>
+              </div>
+              }
+              @if (entry.end_date) {
+              <div class="detail-row">
+                <span class="detail-label">Término:</span>
+                <span class="detail-value">{{ formatDate(entry.end_date) }}</span>
+              </div>
+              }
+            </div>
+
+            <div class="entry-footer">
+              <span class="entry-duration">{{ calculateDurationLog(entry) }}</span>
+              @if (!entry.end_date) {
+              <span class="active-indicator">Ativo</span>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        } @else {
+        <div class="empty-state">
+          <i class="pi pi-clock"></i>
+          <p>Nenhum apontamento encontrado</p>
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="form-actions">
+      <p-button label="Cancelar" icon="pi pi-times" severity="secondary" (onClick)="onHide()" />
+      @if (activeTab() === 'new') {
+      @if (activeTimeEntry) {
+      <p-button label="Encerrar Apontamento" icon="pi pi-stop" severity="danger" [loading]="sending()"
+        [disabled]="!timeEntryDescription().trim()" (onClick)="stopTimeEntry()" />
+      } @else {
+      <p-button label="Iniciar Apontamento" icon="pi pi-play" severity="success" [loading]="sending()"
+        (onClick)="onStartTimeEntry()" />
+      }
+      }
+    </div>
+  </ng-template>
+</p-dialog>

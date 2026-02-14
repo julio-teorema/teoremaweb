@@ -24,14 +24,14 @@ export const appRoutes: Route[] = [
     children: [
       {
         path: '',
-        redirectTo: 'chamados',
+        redirectTo: 'tickets',
         pathMatch: 'full',
       },
       {
-        path: 'chamados',
+        path: 'tickets',
         loadComponent: () =>
-          import('./features/chamados/chamados.component').then(
-            (m) => m.ChamadosComponent
+          import('./features/tickets/tickets.component').then(
+            (m) => m.TicketsComponent
           ),
       },
     ],

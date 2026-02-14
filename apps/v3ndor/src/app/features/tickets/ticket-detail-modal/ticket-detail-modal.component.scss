@@ -1,0 +1,434 @@
+::ng-deep .ticket-detail-dialog {
+  .p-dialog-content {
+    padding: 0 !important;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  // Em telas menores, permitir scroll do conteúdo principal
+  @media (max-width: 768px) {
+    .p-dialog-content {
+      overflow: hidden !important;
+      max-height: 70vh !important;
+    }
+
+    .p-dialog {
+      max-height: 80vh !important;
+      height: auto !important;
+    }
+  }
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dialog-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dialog-header-number {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--v-text-primary, var(--p-text-color));
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    color: var(--p-text-color);
+  }
+}
+
+.active-log-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #ef4444;
+  padding: 0.25rem 0.625rem;
+  border-radius: 1rem;
+  animation: pulse-active 2s ease-in-out infinite;
+
+  i {
+    font-size: 0.75rem;
+  }
+}
+
+@keyframes pulse-active {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.75;
+  }
+}
+
+// ── Layout 3 colunas ──
+.modal-body {
+  display: grid;
+  grid-template-columns: 350px 1fr 480px;
+  grid-template-rows: 1fr auto;
+  gap: 0;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+
+  // Em telas menores, permitir scroll principal
+  @media (max-width: 768px) {
+    overflow-y: auto;
+    min-height: auto;
+    height: auto;
+    max-height: 60vh;
+  }
+}
+
+.col-left {
+  grid-row: 1 / -1;
+  overflow-y: auto;
+  border-right: 1px solid var(--p-content-border-color);
+  min-height: 0;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    border-right-color: var(--p-content-border-color);
+    background: var(--p-surface-0);
+  }
+
+  // Em telas menores, remover scroll interno
+  @media (max-width: 768px) {
+    overflow-y: visible;
+    min-height: auto;
+    max-height: none;
+  }
+}
+
+.col-center {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  border-right: 1px solid var(--p-content-border-color);
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    border-right-color: var(--p-content-border-color);
+    background: var(--p-surface-0);
+  }
+
+  // Em telas menores, remover restrições
+  @media (max-width: 768px) {
+    overflow: visible;
+    min-height: auto;
+  }
+}
+
+.col-center-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    background: var(--p-surface-0);
+  }
+
+  // Em telas menores, remover scroll interno
+  @media (max-width: 768px) {
+    overflow-y: visible;
+    flex: none;
+  }
+}
+
+.col-right {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    background: var(--p-surface-0);
+  }
+
+  // Em telas menores, remover restrições
+  @media (max-width: 768px) {
+    overflow: visible;
+    min-height: auto;
+  }
+}
+
+.col-right-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    background: var(--p-surface-0);
+  }
+
+  // Em telas menores, remover scroll interno
+  @media (max-width: 768px) {
+    overflow-y: visible;
+    flex: none;
+  }
+}
+
+.action-bar-span {
+  grid-column: 2 / -1;
+  border-top: 1px solid var(--p-content-border-color);
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    border-top-color: var(--p-content-border-color);
+    background: var(--p-surface-50);
+  }
+}
+
+// ── Seções de conteúdo (problema, resumo, tarefas) ──
+.content-section {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--p-content-border-color);
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    border-bottom-color: var(--p-content-border-color);
+  }
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.ticket-actions-section {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--p-content-border-color);
+  margin-bottom: 1rem;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    border-bottom-color: var(--p-content-border-color);
+  }
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+}
+
+.content-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--v-text-muted, var(--p-text-muted-color));
+  margin: 0 0 0.625rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    color: var(--p-text-muted-color);
+  }
+
+  i {
+    font-size: 0.75rem;
+  }
+}
+
+.content-text {
+  font-size: 0.875rem;
+  color: var(--v-text-primary, var(--p-text-color));
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    color: var(--p-text-color);
+  }
+}
+
+// ── Tarefas ──
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  cursor: default;
+}
+
+.task-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--v-text-primary, var(--p-text-color));
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    color: var(--p-text-color);
+  }
+}
+
+.task-done {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.task-status {
+  font-size: 0.6875rem;
+  color: var(--v-text-muted, var(--p-text-muted-color));
+  white-space: nowrap;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    color: var(--p-text-muted-color);
+  }
+}
+
+// ── Skeletons ──
+.skeleton-pad {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    background: var(--p-surface-0);
+  }
+}
+
+.timeline-skeleton-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+// ── Responsivo ──
+@media (max-width: 1200px) {
+  .modal-body {
+    grid-template-columns: 320px 1fr;
+    grid-template-rows: 1fr auto;
+  }
+
+  .col-right {
+    display: none;
+  }
+
+  .action-bar-span {
+    grid-column: 2 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr auto;
+  }
+
+  .col-left {
+    grid-row: 1;
+    border-right: none;
+    border-bottom: 1px solid var(--p-content-border-color);
+    max-height: none;
+
+    // Dark mode
+    :root.dark &,
+    .dark & {
+      border-bottom-color: var(--p-content-border-color);
+    }
+  }
+
+  .col-center {
+    grid-row: 2;
+    border-right: none;
+    border-bottom: 1px solid var(--p-content-border-color);
+
+    // Dark mode
+    :root.dark &,
+    .dark & {
+      border-bottom-color: var(--p-content-border-color);
+    }
+  }
+
+  .col-right {
+    grid-row: 3;
+    display: flex;
+    border-right: none;
+  }
+
+  .action-bar-span {
+    grid-row: 4;
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-body {
+    grid-template-rows: auto auto 1fr auto;
+  }
+
+  .col-left {
+    max-height: none;
+  }
+
+  .col-center-scroll {
+    padding: 1rem;
+  }
+
+  .col-right-scroll {
+    padding: 1rem;
+  }
+
+  .dialog-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .dialog-header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}

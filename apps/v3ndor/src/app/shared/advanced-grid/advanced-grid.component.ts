@@ -8,6 +8,9 @@ import {
   ViewChild,
   OnInit,
   OnDestroy,
+  OnChanges,
+  SimpleChanges,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -44,8 +47,9 @@ import { GridColumn, GridConfig } from '@org/shared/models';
   ],
   templateUrl: './advanced-grid.component.html',
   styleUrls: ['./advanced-grid.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdvancedGridComponent implements OnInit, OnDestroy {
+export class AdvancedGridComponent implements OnInit, OnDestroy, OnChanges {
   isMobile = signal(false);
   private mql!: MediaQueryList;
   private mqlHandler = (e: MediaQueryListEvent) => this.isMobile.set(e.matches);
@@ -75,10 +79,12 @@ export class AdvancedGridComponent implements OnInit, OnDestroy {
 
   sortedData = computed(() => {
     const field = this.groupByField();
-    if (!field) return this.data;
-    return [...this.data].sort((a, b) => {
-      const va = String((a as Record<string, unknown>)[field] ?? '');
-      const vb = String((b as Record<string, unknown>)[field] ?? '');
+    const source = field ? this.filteredData() : this.data;
+    if (!field) return source;
+    const col = this.columns.find((c) => c.field === field);
+    return [...source].sort((a, b) => {
+      const va = this.getFieldDisplayValue(a, field, col);
+      const vb = this.getFieldDisplayValue(b, field, col);
       return va.localeCompare(vb);
     });
   });
@@ -88,25 +94,49 @@ export class AdvancedGridComponent implements OnInit, OnDestroy {
     if (!field) return this.data;
     const sorted = this.sortedData();
     const expanded = this.expandedGroups();
+    const hasSearch = !!this.globalFilterValue();
+    const col = this.columns.find((c) => c.field === field);
     const result: unknown[] = [];
     let lastGroup = '';
     for (const row of sorted) {
-      const val = String((row as Record<string, unknown>)[field] ?? '');
+      const val = this.getFieldDisplayValue(row, field, col);
       if (val !== lastGroup) {
         lastGroup = val;
         const count = sorted.filter(
-          (r) => String((r as Record<string, unknown>)[field] ?? '') === val
+          (r) => this.getFieldDisplayValue(r, field, col) === val
         ).length;
         result.push({ _isGroupHeader: true, _groupValue: val, _groupCount: count });
-        if (expanded.has(val)) {
+        if (hasSearch || expanded.has(val)) {
           result.push(row);
         }
-      } else if (expanded.has(lastGroup)) {
+      } else if (hasSearch || expanded.has(lastGroup)) {
         result.push(row);
       }
     }
     return result;
   });
+
+  private _filterOptionsCache = new Map<string, { label: string; value: string }[]>();
+
+  getColumnFilterOptions(field: string): { label: string; value: string }[] {
+    const cached = this._filterOptionsCache.get(field);
+    if (cached) return cached;
+    const col = this.columns.find((c) => c.field === field);
+    const unique = new Set<string>();
+    for (const row of this.data) {
+      const val = this.getFieldDisplayValue(row, field, col);
+      if (val && val !== '') {
+        unique.add(val);
+      }
+    }
+    const options = Array.from(unique)
+      .sort((a, b) => a.localeCompare(b))
+      .map((v) => ({ label: v, value: v }));
+    this._filterOptionsCache.set(field, options);
+    return options;
+  }
+
+  private _columnStyleCache = new Map<string, Record<string, string>>();
 
   visibleColumns = computed(() => {
     const selected = this.selectedColumns();
@@ -115,6 +145,15 @@ export class AdvancedGridComponent implements OnInit, OnDestroy {
     }
     return selected;
   });
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['data']) {
+      this._filterOptionsCache.clear();
+    }
+    if (changes['columns']) {
+      this._columnStyleCache.clear();
+    }
+  }
 
   ngOnInit(): void {
     const initial = this.columns.filter((c) => c.visible !== false);
@@ -147,7 +186,9 @@ export class AdvancedGridComponent implements OnInit, OnDestroy {
   onGlobalFilter(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.globalFilterValue.set(value);
-    this.table?.filterGlobal(value, 'contains');
+    if (!this.groupByField()) {
+      this.table?.filterGlobal(value, 'contains');
+    }
   }
 
   clearFilters(): void {
@@ -203,10 +244,13 @@ export class AdvancedGridComponent implements OnInit, OnDestroy {
   }
 
   getColumnStyle(col: GridColumn): Record<string, string> {
+    const cached = this._columnStyleCache.get(col.field);
+    if (cached) return cached;
     const style: Record<string, string> = {};
     if (col.width) style['width'] = col.width;
     if (col.width) style['min-width'] = col.width;
     if (col.align) style['text-align'] = col.align;
+    this._columnStyleCache.set(col.field, style);
     return style;
   }
 
@@ -219,6 +263,46 @@ export class AdvancedGridComponent implements OnInit, OnDestroy {
       return value.toLocaleDateString('pt-BR');
     }
     return String(value ?? '');
+  }
+
+  getCellHtml(row: unknown, col: GridColumn): string | null {
+    if (!col.htmlFormat) return null;
+    const value = (row as Record<string, unknown>)[col.field];
+    return col.htmlFormat(value, row as Record<string, unknown>);
+  }
+
+  highlightText(text: string, col?: GridColumn): string {
+    if (!text) return text;
+
+    const terms = new Set<string>();
+    const global = this.globalFilterValue().trim();
+    if (global) {
+      terms.add(global);
+    }
+
+    if (col && this.table?.filters) {
+      const rawMeta = (this.table.filters as Record<string, unknown>)[col.field];
+      const metas = Array.isArray(rawMeta) ? rawMeta : rawMeta ? [rawMeta] : [];
+      for (const meta of metas as Record<string, unknown>[]) {
+        const value = meta?.['value'] as unknown;
+        if (Array.isArray(value)) {
+          for (const item of value) {
+            const str = String(item ?? '').trim();
+            if (str) terms.add(str);
+          }
+        } else if (value !== null && value !== undefined) {
+          const str = String(value).trim();
+          if (str) terms.add(str);
+        }
+      }
+    }
+
+    if (terms.size === 0) return text;
+
+    const patterns = Array.from(terms).sort((a, b) => b.length - a.length);
+    const escaped = patterns.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const regex = new RegExp(`(${escaped.join('|')})`, 'gi');
+    return text.replace(regex, '<mark>$1</mark>');
   }
 
   toggleGroup(groupValue: string): void {
@@ -255,9 +339,18 @@ export class AdvancedGridComponent implements OnInit, OnDestroy {
   getGroupCount(row: unknown): number {
     const field = this.groupByField();
     if (!field) return 0;
-    const groupVal = String((row as Record<string, unknown>)[field] ?? '');
+    const col = this.columns.find((c) => c.field === field);
+    const groupVal = this.getFieldDisplayValue(row, field, col);
     return this.sortedData().filter(
-      (r) => String((r as Record<string, unknown>)[field] ?? '') === groupVal
+      (r) => this.getFieldDisplayValue(r, field, col) === groupVal
     ).length;
+  }
+
+  private getFieldDisplayValue(row: unknown, field: string, col?: GridColumn): string {
+    const value = (row as Record<string, unknown>)[field];
+    if (col?.format) {
+      return col.format(value);
+    }
+    return String(value ?? '');
   }
 }

@@ -1,0 +1,43 @@
+<div class="ticket-actions">
+  <!-- Situação e Urgente - Lado a Lado -->
+  <div class="actions-row">
+    <!-- Urgente - Toggle Switch (agora primeiro) -->
+    <div class="action-field">
+      <div class="action-label">Urgente</div>
+      <div class="urgent-toggle">
+        <p-toggleSwitch [ngModel]="ticket.urgent === 1" (ngModelChange)="toggleUrgent()" [disabled]="saving()" />
+        @if (ticket.urgent === 1) {
+        <p-tag severity="danger" value="SIM" [rounded]="true" />
+        } @else {
+        <span class="action-value">Não</span>
+        }
+      </div>
+    </div>
+
+    <!-- Situação - Botões de Ação (agora segundo) -->
+    <div class="action-field">
+      <div class="action-label">Situação</div>
+      <div class="situation-layout">
+        <div class="situation-status">
+          @if (ticket.situation === 'A') {
+          <span class="status-text status-open">Aberto</span>
+          } @else {
+          <span class="status-text status-closed">Fechado</span>
+          }
+        </div>
+        <div class="situation-actions">
+          @if (ticket.situation === 'A') {
+          <p-button label="Fechar Chamado" icon="pi pi-lock" severity="secondary" variant="outlined"
+            [loading]="saving()" (onClick)="closeTicket()" size="small" />
+          } @else {
+          <p-button label="Reabrir Chamado" icon="pi pi-lock-open" severity="secondary" variant="outlined"
+            [loading]="saving()" (onClick)="reopenTicket()" size="small" />
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Dialog de confirmação -->
+<p-confirmDialog />

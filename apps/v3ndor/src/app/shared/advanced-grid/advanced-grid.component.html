@@ -1,19 +1,20 @@
 @if (!isMobile()) {
 <!-- ═══ Desktop: Toolbar + Table ═══ -->
 <div class="desktop-toolbar">
-  <span class="text-sm text-surface-500">
-    <span class="font-semibold text-surface-700">{{ data.length }}</span>
-    <span> registros</span>
-  </span>
-  <div class="flex items-center gap-2">
-    <p-iconfield>
+  <div class="toolbar-left">
+    <p-iconfield class="toolbar-search">
       <p-inputicon styleClass="pi pi-search" />
       <input pInputText type="text" [value]="globalFilterValue()" (input)="onGlobalFilter($event)"
-        placeholder="Buscar..." class="p-inputtext-sm" style="width: 220px" />
+        placeholder="Buscar..." class="p-inputtext-sm" style="width: 100%" />
     </p-iconfield>
+    <span class="toolbar-count">
+      <span class="font-semibold">{{ data.length }}</span> registros
+    </span>
+  </div>
+  <div class="toolbar-right">
     <p-select [options]="groupOptions()" [ngModel]="groupByField()" (ngModelChange)="groupByField.set($event)"
       optionLabel="label" optionValue="value" placeholder="Agrupar por" styleClass="p-select-sm"
-      style="min-width: 160px" />
+      style="min-width: 140px" />
     <p-multiSelect [options]="columns" [(ngModel)]="selectedColumns" optionLabel="header" placeholder="Colunas"
       [maxSelectedLabels]="0" selectedItemsLabel="{0} colunas" (onChange)="onColumnToggle($event.value)"
       styleClass="p-multiselect-sm" />
@@ -42,7 +43,8 @@
     @if (isGroupHeader(row)) {
     <tr class="group-header-row" (click)="toggleGroup($any(row)._groupValue)" style="cursor: pointer;">
       <td [attr.colspan]="visibleColumns().length">
-        <i class="pi" [ngClass]="expandedGroups().has($any(row)._groupValue) ? 'pi-chevron-down' : 'pi-chevron-right'"
+        <i class="pi"
+          [ngClass]="(expandedGroups().has($any(row)._groupValue) || globalFilterValue()) ? 'pi-chevron-down' : 'pi-chevron-right'"
           style="font-size: 0.75rem; margin-right: 0.5rem;"></i>
         <span class="font-semibold">{{ getGroupLabel() }}:</span>
         <span class="ml-2">{{ $any(row)._groupValue || '(vazio)' }}</span>
@@ -50,9 +52,13 @@
       </td>
     </tr>
     } @else {
-    <tr>
+    <tr class="cursor-pointer" [class.urgent-row]="($any(row)).urgent === 1">
       @for (col of columns; track col.field) {
-      <td [style]="getColumnStyle(col)">{{ getCellValue(row, col) }}</td>
+      @if (getCellHtml(row, col)) {
+      <td [style]="getColumnStyle(col)" [innerHTML]="getCellHtml(row, col)"></td>
+      } @else {
+      <td [style]="getColumnStyle(col)" [innerHTML]="highlightText(getCellValue(row, col), col)"></td>
+      }
       }
     </tr>
     }
@@ -72,48 +78,56 @@
 } @else {
 <!-- Normal table (no grouping) -->
 <p-table #dt [value]="data" [columns]="visibleColumns()" [loading]="loading" [globalFilterFields]="getFilterFields()"
-  [scrollable]="true" scrollHeight="flex" [resizableColumns]="config.resizableColumns || false"
-  [reorderableColumns]="true" [showGridlines]="config.showGridlines || false"
-  [stripedRows]="config.stripedRows || false" [tableStyle]="{ 'min-width': '60rem' }"
-  (onRowSelect)="rowSelect.emit($any($event).data)" (onRowDblClick)="rowDblClick.emit($any($event).data)"
-  (onColReorder)="onColReorder($event)" [exportFilename]="title || 'export'" styleClass="p-datatable-sm has-toolbar">
+  [scrollable]="true" scrollHeight="flex" [virtualScroll]="data.length > 100" [virtualScrollItemSize]="36"
+  [resizableColumns]="config.resizableColumns || false" [reorderableColumns]="true"
+  [showGridlines]="config.showGridlines || false" [stripedRows]="config.stripedRows || false"
+  [tableStyle]="{ 'min-width': '60rem' }" (onRowSelect)="rowSelect.emit($any($event).data)"
+  (onRowDblClick)="rowDblClick.emit($any($event).data)" (onColReorder)="onColReorder($event)"
+  [exportFilename]="title || 'export'" styleClass="p-datatable-sm has-toolbar">
 
   <ng-template pTemplate="header" let-columns>
     <tr>
       @for (col of columns; track col.field) {
       <th pReorderableColumn [pSortableColumn]="col.sortable !== false ? col.field : undefined"
         [style]="getColumnStyle(col)">
-        {{ col.header }}
-        @if (col.sortable !== false) { <p-sortIcon [field]="col.field" /> }
-      </th>
-      }
-    </tr>
-    <tr>
-      @for (col of columns; track col.field) {
-      <th [style]="getColumnStyle(col)">
-        @if (col.filterable !== false) {
-        @switch (col.filterType) {
-        @case ('numeric') { <p-columnFilter type="numeric" [field]="col.field" display="menu" /> }
-        @case ('date') { <p-columnFilter type="date" [field]="col.field" display="menu" /> }
-        @default {
-        <p-columnFilter type="text" [field]="col.field" [matchMode]="'contains'" [showMenu]="false">
-          <ng-template pTemplate="filter" let-value let-filterCallback="filterCallback">
-            <input pInputText type="text" class="p-inputtext-sm" style="width: 100%" [value]="value"
-              (input)="filterCallback($any($event.target).value)" placeholder="Filtrar..." />
-          </ng-template>
-        </p-columnFilter>
-        }
-        }
-        }
+        <div class="th-content">
+          <span>{{ col.header }}</span>
+          @if (col.sortable !== false) { <p-sortIcon [field]="col.field" /> }
+          @if (col.filterable !== false) {
+          @switch (col.filterType) {
+          @case ('numeric') { <p-columnFilter type="numeric" [field]="col.field" display="menu" /> }
+          @case ('date') { <p-columnFilter type="date" [field]="col.field" display="menu" /> }
+          @case ('dropdown') {
+          <p-columnFilter [field]="col.field" matchMode="in" display="menu" [showMatchModes]="false"
+            [showOperator]="false" [showAddButton]="false">
+            <ng-template pTemplate="filter" let-value let-filterCallback="filterCallback">
+              <p-multiSelect [options]="getColumnFilterOptions(col.field)" [ngModel]="value"
+                (ngModelChange)="filterCallback($event)" optionLabel="label" optionValue="value" placeholder="Todos"
+                [maxSelectedLabels]="1" selectedItemsLabel="{0} selecionados" styleClass="p-multiselect-sm"
+                style="min-width: 200px" />
+            </ng-template>
+          </p-columnFilter>
+          }
+          @default {
+          <p-columnFilter type="text" [field]="col.field" [matchMode]="'contains'" display="menu"
+            [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" />
+          }
+          }
+          }
+        </div>
       </th>
       }
     </tr>
   </ng-template>
 
   <ng-template pTemplate="body" let-row let-columns="columns">
-    <tr>
+    <tr class="cursor-pointer" [class.urgent-row]="($any(row)).urgent === 1" (click)="rowSelect.emit(row)">
       @for (col of columns; track col.field) {
-      <td [style]="getColumnStyle(col)">{{ getCellValue(row, col) }}</td>
+      @if (getCellHtml(row, col)) {
+      <td [style]="getColumnStyle(col)" [innerHTML]="getCellHtml(row, col)"></td>
+      } @else {
+      <td [style]="getColumnStyle(col)" [innerHTML]="highlightText(getCellValue(row, col), col)"></td>
+      }
       }
     </tr>
   </ng-template>
@@ -146,12 +160,16 @@
 
   <div class="mobile-cards">
     @for (row of filteredData(); track $index) {
-    <div class="mobile-card" tabindex="0" role="button" (click)="rowSelect.emit(row)"
-      (keyup.enter)="rowSelect.emit(row)">
+    <div class="mobile-card" [class.urgent-card]="($any(row)).urgent === 1" tabindex="0" role="button"
+      (click)="rowSelect.emit(row)" (keyup.enter)="rowSelect.emit(row)">
       @for (col of visibleColumns(); track col.field) {
       <div class="mobile-card-field">
         <span class="mobile-card-label">{{ col.header }}</span>
+        @if (getCellHtml(row, col)) {
+        <span class="mobile-card-value" [innerHTML]="getCellHtml(row, col)"></span>
+        } @else {
         <span class="mobile-card-value">{{ getCellValue(row, col) }}</span>
+        }
       </div>
       }
     </div>

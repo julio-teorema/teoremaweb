@@ -1,0 +1,22 @@
+@if (activeTimeEntry) {
+<div class="active-time-entry">
+  <div class="active-header">
+    <i class="pi pi-clock"></i>
+    <span>Apontamento em andamento</span>
+  </div>
+  <div class="active-info">
+    <p>
+      <i class="pi pi-align-left" style="font-size: 0.75rem; color: #6b7280; margin-top: 0.125rem;"></i>
+      <strong>Descrição:</strong>
+      <span>{{ activeTimeEntry.description }}</span>
+    </p>
+    <p>
+      <i class="pi pi-play" style="font-size: 0.75rem; color: #6b7280; margin-top: 0.125rem;"></i>
+      <strong>Início:</strong>
+      <span>{{ formatDate(activeTimeEntry.start_date) }}</span>
+    </p>
+  </div>
+  <p-button icon="pi pi-stop" label="Encerrar Apontamento" size="small" severity="danger" [loading]="sending()"
+    (onClick)="onStopTimeEntry()" />
+</div>
+}

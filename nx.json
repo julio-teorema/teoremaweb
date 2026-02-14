@@ -37,7 +37,7 @@
       }
     }
   ],
-  "nxCloudId": "698d1fa5d808f358926d32ba",
+  "nxCloudId": "698f0e7baa079d89e51feedd",
   "targetDefaults": {
     "@angular/build:application": {
       "cache": true,
@@ -82,5 +82,6 @@
     "version": {
       "preVersionCommand": "npx nx run-many -t build"
     }
-  }
+  },
+  "defaultBase": "master"
 }

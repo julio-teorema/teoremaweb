@@ -1,0 +1,58 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+// Header da página - aparece apenas em mobile
+.v-page-header {
+  &.mobile-only {
+    display: none; // Esconder por padrão
+
+    @media (max-width: 768px) {
+      display: block; // Mostrar apenas em mobile
+      padding: 1rem 1.5rem;
+      background: var(--v-bg-card);
+      border-bottom: 1px solid var(--v-border);
+
+      h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--v-text-primary);
+        margin: 0;
+      }
+    }
+  }
+}
+
+.results-info {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--v-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+// Badge Urgente para listagem
+::ng-deep .urgent-badge {
+  background: var(--p-red-500, #ef4444);
+  color: #fff;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-left: 6px;
+  vertical-align: middle;
+  display: inline-block;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+// Dark mode para badge urgente
+:host-context(.dark) ::ng-deep .urgent-badge,
+:root.dark ::ng-deep .urgent-badge {
+  background: var(--p-red-500);
+  color: #fff;
+}

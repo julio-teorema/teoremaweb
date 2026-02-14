@@ -1,0 +1,117 @@
+<div class="timeline-container">
+  <!-- Filtros da Timeline -->
+  <div class="timeline-filters">
+    <div class="filter-buttons">
+      <p-button icon="pi pi-list" [severity]="filter() === 'all' ? 'primary' : 'secondary'"
+        [outlined]="filter() !== 'all'" size="small" (click)="setFilter('all')" title="Mostrar tudo" />
+      <p-button icon="pi pi-comment" [severity]="filter() === 'comments' ? 'primary' : 'secondary'"
+        [outlined]="filter() !== 'comments'" size="small" (click)="setFilter('comments')" title="Apenas comentários" />
+      <p-button icon="pi pi-clock" [severity]="filter() === 'timeentries' ? 'primary' : 'secondary'"
+        [outlined]="filter() !== 'timeentries'" size="small" (click)="setFilter('timeentries')"
+        title="Apenas apontamentos" />
+      <p-button icon="pi pi-check-square" [severity]="filter() === 'tasks' ? 'primary' : 'secondary'"
+        [outlined]="filter() !== 'tasks'" size="small" (click)="setFilter('tasks')" title="Apenas tarefas" />
+      <p-button icon="pi pi-paperclip" [severity]="filter() === 'attachments' ? 'primary' : 'secondary'"
+        [outlined]="filter() !== 'attachments'" size="small" (click)="setFilter('attachments')" title="Apenas anexos" />
+      <p-button icon="pi pi-external-link" [severity]="filter() === 'opened' ? 'primary' : 'secondary'"
+        [outlined]="filter() !== 'opened'" size="small" (click)="setFilter('opened')" title="Apenas aberturas" />
+    </div>
+  </div>
+
+  <!-- Conteúdo da Timeline com rolagem -->
+  <div class="timeline-content">
+    @if (filteredEntries().length === 0) {
+    <div class="timeline-empty">
+      <i class="pi pi-clock" style="font-size: 2rem; color: var(--v-text-muted);"></i>
+      <span>
+        @switch (filter()) {
+        @case ('all') { Nenhuma atividade registrada }
+        @case ('comments') { Nenhum comentário encontrado }
+        @case ('timeentries') { Nenhum apontamento encontrado }
+        @case ('tasks') { Nenhuma tarefa encontrada }
+        @case ('attachments') { Nenhum anexo encontrado }
+        @case ('opened') { Nenhuma abertura encontrada }
+        }
+      </span>
+    </div>
+    } @else {
+    <p-timeline [value]="filteredEntries()" align="left">
+      <ng-template #marker let-entry>
+        <span class="timeline-marker" [style.background-color]="entry.color">
+          <i [class]="entry.icon" style="font-size: 0.75rem;"></i>
+        </span>
+      </ng-template>
+
+      <ng-template #content let-entry>
+        <div class="timeline-entry" [attr.data-type]="entry.type" [class.entry-open]="entry.isOpen">
+          <div class="timeline-entry-header">
+            <span class="timeline-entry-type">{{ entry.title }}</span>
+            <span class="timeline-entry-date">{{ formatDate(entry.date) }}</span>
+          </div>
+          @if (entry.type === 'log') {
+          <div class="timeline-entry-times">
+            <span class="time-range">
+              <i class="pi pi-play" style="font-size: 0.5625rem;"></i>
+              {{ formatTime(entry.startDate) }}
+            </span>
+            @if (entry.endDate) {
+            <span class="time-range">
+              <i class="pi pi-stop" style="font-size: 0.5625rem;"></i>
+              {{ formatTime(entry.endDate) }}
+            </span>
+            <span class="time-duration">{{ calcDuration(entry.startDate, entry.endDate) }}</span>
+            } @else {
+            <span class="time-open-badge">Em andamento</span>
+            }
+          </div>
+          }
+          @if (entry.type === 'task') {
+          <div class="timeline-entry-task">
+            @if (entry.data && entry.data['finished']) {
+            <span class="task-completed-badge">
+              <i class="pi pi-check"></i>
+              Concluída
+            </span>
+            } @else {
+            <span class="task-pending-badge">
+              <i class="pi pi-clock"></i>
+              Pendente
+            </span>
+            }
+          </div>
+          }
+          @if (entry.type === 'attachment') {
+          <div class="timeline-entry-attachment">
+            <span class="attachment-info">
+              <i class="pi pi-paperclip"></i>
+              @if (entry.data && entry.data['file_name']) {
+              {{ entry.data['file_name'] }}
+              } @else {
+              Anexo
+              }
+            </span>
+          </div>
+          }
+          @if (entry.type === 'opened') {
+          <div class="timeline-entry-opened">
+            <span class="opened-info">
+              <i class="pi pi-external-link"></i>
+              Chamado aberto
+            </span>
+          </div>
+          }
+          @if (entry.description) {
+          <div class="timeline-entry-body">{{ entry.description }}</div>
+          }
+          @if (entry.user) {
+          <div class="timeline-entry-user">
+            <i class="pi pi-user" style="font-size: 0.625rem;"></i>
+            {{ entry.user }}
+          </div>
+          }
+        </div>
+      </ng-template>
+    </p-timeline>
+    }
+  </div>
+</div>

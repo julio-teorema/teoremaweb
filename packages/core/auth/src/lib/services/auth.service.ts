@@ -81,6 +81,23 @@ export class AuthService {
     const userJson = localStorage.getItem(this.USER_KEY);
     const companyGroupJson = localStorage.getItem(this.COMPANY_GROUP_KEY);
 
+    // Forçar limpeza se o usuário tiver ID antigo (inválido)
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      if (user.id === '1' || user.id === '2' || user.id === '3' ||
+        user.id === '350653dc-10e1-11ec-ac10-0242ac140002' ||
+        user.id === '0000113a-f53b-11eb-8b5d-0242ac160002') {
+        // Limpar storage para forçar novo login com UUID correto
+        localStorage.removeItem(this.TOKEN_KEY);
+        localStorage.removeItem(this.USER_KEY);
+        localStorage.removeItem(this.COMPANY_GROUP_KEY);
+        this.currentUserSignal.set(null);
+        this.currentTokenSignal.set(null);
+        this.selectedCompanyGroupSignal.set(null);
+        return;
+      }
+    }
+
     if (token && userJson) {
       this.currentTokenSignal.set(token);
       this.currentUserSignal.set(JSON.parse(userJson));

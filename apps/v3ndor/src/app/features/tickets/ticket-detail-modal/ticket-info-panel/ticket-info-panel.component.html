@@ -1,0 +1,392 @@
+<div class="info-panel">
+  <!-- Seção Principal - Campos Mais Importantes -->
+  <div class="info-section">
+    <h3 class="info-section-title">Informações Principais</h3>
+
+    <!-- 1. Cliente -->
+    <div class="info-field editable-field critical-field">
+      <span class="info-label">Cliente</span>
+      @if (editingField() === 'customer_id') {
+      <div class="edit-inline">
+        <input type="text" pInputText [(ngModel)]="editCustomerId" class="edit-input-text" placeholder="ID do cliente"
+          (keydown.enter)="saveField('customer_id')" (keydown.escape)="cancelEdit()" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('customer_id')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('customer_id')"
+        (keydown.enter)="startEdit('customer_id')">
+        {{ ticket.customer_name }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 2. Sistema -->
+    <div class="info-field editable-field critical-field">
+      <span class="info-label">Sistema</span>
+      @if (editingField() === 'system_id') {
+      <div class="edit-inline">
+        <input type="text" pInputText [(ngModel)]="editSystemId" class="edit-input-text" placeholder="ID do sistema"
+          (keydown.enter)="saveField('system_id')" (keydown.escape)="cancelEdit()" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('system_id')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('system_id')"
+        (keydown.enter)="startEdit('system_id')">
+        {{ ticket.system?.description ?? '—' }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 3. Solicitante -->
+    <div class="info-field editable-field critical-field">
+      <span class="info-label">Solicitante</span>
+      @if (editingField() === 'requester') {
+      <div class="edit-inline">
+        <input type="text" pInputText [(ngModel)]="editRequester" class="edit-input-text"
+          placeholder="Nome do solicitante" (keydown.enter)="saveField('requester')" (keydown.escape)="cancelEdit()" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('requester')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('requester')"
+        (keydown.enter)="startEdit('requester')">
+        {{ ticket.requester || '—' }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 4. Prioridade -->
+    <div class="info-field editable-field critical-field">
+      <span class="info-label">Prioridade</span>
+      @if (editingField() === 'priority') {
+      <div class="edit-inline">
+        <p-inputNumber [(ngModel)]="editPriority" [showButtons]="true" [min]="0" [max]="9" size="small"
+          styleClass="edit-input-number"
+          (onKeyDown)="$event.code === 'Enter' && saveField('priority'); $event.code === 'Escape' && cancelEdit()" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('priority')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('priority')"
+        (keydown.enter)="startEdit('priority')">
+        {{ ticket.priority }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 7. Responsável -->
+    <div class="info-field editable-field critical-field">
+      <span class="info-label">Responsável</span>
+      @if (editingField() === 'responsible_id') {
+      <div class="edit-inline">
+        <input type="text" pInputText [(ngModel)]="editResponsibleId" class="edit-input-text"
+          placeholder="ID do responsável" (keydown.enter)="saveField('responsible_id')"
+          (keydown.escape)="cancelEdit()" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('responsible_id')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('responsible_id')"
+        (keydown.enter)="startEdit('responsible_id')">
+        {{ ticket.responsible?.name ?? '—' }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 8. Status -->
+    <div class="info-field editable-field critical-field">
+      <span class="info-label">Status</span>
+      @if (editingField() === 'ticket_status_id') {
+      <div class="edit-inline">
+        <input type="text" pInputText [(ngModel)]="editStatusId" class="edit-input-text" placeholder="ID do status"
+          (keydown.enter)="saveField('ticket_status_id')" (keydown.escape)="cancelEdit()" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('ticket_status_id')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('ticket_status_id')"
+        (keydown.enter)="startEdit('ticket_status_id')">
+        {{ ticket.status?.description ?? '—' }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 9. Desenvolvedor -->
+    <div class="info-field editable-field critical-field">
+      <span class="info-label">Desenvolvedor</span>
+      @if (editingField() === 'developer_id') {
+      <div class="edit-inline">
+        <input type="text" pInputText [(ngModel)]="editDeveloperId" class="edit-input-text"
+          placeholder="ID do desenvolvedor" (keydown.enter)="saveField('developer_id')"
+          (keydown.escape)="cancelEdit()" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('developer_id')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('developer_id')"
+        (keydown.enter)="startEdit('developer_id')">
+        {{ ticket.developer?.name ?? '—' }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+  </div>
+
+  <!-- Seção Secundária - Campos Adicionais -->
+  <div class="info-section">
+    <h3 class="info-section-title">
+      <i class="pi pi-pencil" style="font-size: 0.625rem;"></i>
+      Informações Adicionais
+    </h3>
+
+    <!-- 10. Esforço Técnico -->
+    <div class="info-field editable-field">
+      <span class="info-label">Esforço Técnico</span>
+      @if (editingField() === 'estimated_effort') {
+      <div class="edit-inline">
+        <p-inputNumber [(ngModel)]="editEstimatedEffort" [min]="0" [maxFractionDigits]="2" size="small"
+          styleClass="edit-input-number"
+          (onKeyDown)="$event.code === 'Enter' && saveField('estimated_effort'); $event.code === 'Escape' && cancelEdit()" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('estimated_effort')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('estimated_effort')"
+        (keydown.enter)="startEdit('estimated_effort')">
+        {{ ticket.estimated_effort || '—' }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 11. Previsão Análise -->
+    <div class="info-field editable-field">
+      <span class="info-label">Previsão Análise</span>
+      @if (editingField() === 'analysis_expected_date') {
+      <div class="edit-inline">
+        <p-datepicker [(ngModel)]="editAnalysisExpectedDate" dateFormat="dd/mm/yy" [showIcon]="true"
+          [showButtonBar]="true" styleClass="edit-datepicker" appendTo="body" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('analysis_expected_date')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('analysis_expected_date')"
+        (keydown.enter)="startEdit('analysis_expected_date')">
+        {{ formatDateShort(ticket.analysis_expected_date) }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 12. Previsão Desenvolvimento -->
+    <div class="info-field editable-field">
+      <span class="info-label">Previsão Desenvolvimento</span>
+      @if (editingField() === 'development_expected_date') {
+      <div class="edit-inline">
+        <p-datepicker [(ngModel)]="editDevelopmentExpectedDate" dateFormat="dd/mm/yy" [showIcon]="true"
+          [showButtonBar]="true" styleClass="edit-datepicker" appendTo="body" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('development_expected_date')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('development_expected_date')"
+        (keydown.enter)="startEdit('development_expected_date')">
+        {{ formatDateShort(ticket.development_expected_date) }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 13. Previsão Final -->
+    <div class="info-field editable-field">
+      <span class="info-label">Previsão Final</span>
+      @if (editingField() === 'expected_date') {
+      <div class="edit-inline">
+        <p-datepicker [(ngModel)]="editExpectedDate" dateFormat="dd/mm/yy" [showIcon]="true" [showButtonBar]="true"
+          styleClass="edit-datepicker" appendTo="body" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('expected_date')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('expected_date')"
+        (keydown.enter)="startEdit('expected_date')">
+        {{ formatDateShort(ticket.expected_date) }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 14. Tipo -->
+    <div class="info-field editable-field">
+      <span class="info-label">Tipo</span>
+      @if (editingField() === 'type') {
+      <div class="edit-inline">
+        <input type="text" pInputText [(ngModel)]="editType" class="edit-input-text" placeholder="Tipo do chamado"
+          (keydown.enter)="saveField('type')" (keydown.escape)="cancelEdit()" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('type')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('type')"
+        (keydown.enter)="startEdit('type')">
+        {{ ticket.type || '—' }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 15. Tipo Chamada -->
+    <div class="info-field editable-field">
+      <span class="info-label">Tipo Chamada</span>
+      @if (editingField() === 'ticket_type_id') {
+      <div class="edit-inline">
+        <input type="text" pInputText [(ngModel)]="editTicketTypeId" class="edit-input-text" placeholder="ID do tipo"
+          (keydown.enter)="saveField('ticket_type_id')" (keydown.escape)="cancelEdit()" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('ticket_type_id')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('ticket_type_id')"
+        (keydown.enter)="startEdit('ticket_type_id')">
+        {{ ticket.ticket_type?.description || '—' }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 16. Email -->
+    <div class="info-field editable-field">
+      <span class="info-label">Email</span>
+      @if (editingField() === 'email') {
+      <div class="edit-inline">
+        <input type="email" pInputText [(ngModel)]="editEmail" class="edit-input-text" placeholder="email@exemplo.com"
+          (keydown.enter)="saveField('email')" (keydown.escape)="cancelEdit()" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('email')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('email')"
+        (keydown.enter)="startEdit('email')">
+        {{ ticket.email || '—' }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+
+    <!-- 17. Telefone -->
+    <div class="info-field editable-field">
+      <span class="info-label">Telefone</span>
+      @if (editingField() === 'phone') {
+      <div class="edit-inline">
+        <input type="tel" pInputText [(ngModel)]="editPhone" class="edit-input-text" placeholder="(00) 00000-0000"
+          (keydown.enter)="saveField('phone')" (keydown.escape)="cancelEdit()" />
+        <div class="edit-actions">
+          <button class="edit-btn save" (click)="saveField('phone')" [disabled]="saving()">
+            <i class="pi pi-check"></i>
+          </button>
+          <button class="edit-btn cancel" (click)="cancelEdit()">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+      </div>
+      } @else {
+      <span class="info-value clickable" tabindex="0" role="button" (click)="startEdit('phone')"
+        (keydown.enter)="startEdit('phone')">
+        {{ ticket.phone || '—' }}
+        <i class="pi pi-pencil edit-icon"></i>
+      </span>
+      }
+    </div>
+  </div>

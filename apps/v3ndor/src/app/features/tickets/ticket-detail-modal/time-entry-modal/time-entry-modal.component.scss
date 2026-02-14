@@ -1,0 +1,899 @@
+.time-entry-form {
+  padding: 1.5rem;
+  overflow-x: hidden; // Prevenir rolagem horizontal
+
+  // Responsividade
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.ticket-info {
+  background: var(--p-surface-100, #f3f4f6);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--p-content-border-color, #e5e7eb);
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    background: var(--p-surface-100);
+    border-color: var(--p-content-border-color);
+  }
+
+  // Responsividade
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    // Responsividade
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: var(--p-text-color, #374151);
+      font-size: 0.875rem;
+      min-width: 60px;
+
+      // Dark mode
+      @media (prefers-color-scheme: dark) {
+        color: var(--p-text-color, #f3f4f6);
+      }
+
+      // Responsividade
+      @media (max-width: 768px) {
+        font-size: 0.8125rem;
+        min-width: auto;
+      }
+    }
+
+    .info-value {
+      color: var(--p-text-color, #6b7280);
+      font-size: 0.875rem;
+
+      // Dark mode
+      @media (prefers-color-scheme: dark) {
+        color: var(--p-text-color, #d1d5db);
+      }
+
+      // Responsividade
+      @media (max-width: 768px) {
+        font-size: 0.8125rem;
+      }
+
+      &.status-badge {
+        background: var(--p-primary-color, #3b82f6);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+
+        // Responsividade
+        @media (max-width: 768px) {
+          font-size: 0.6875rem;
+          padding: 0.1875rem 0.375rem;
+        }
+      }
+    }
+
+    .status-select-container {
+      flex: 1;
+      min-width: 150px;
+
+      // Responsividade
+      @media (max-width: 768px) {
+        min-width: 100%;
+        width: 100%;
+      }
+
+      .status-select {
+        width: 100%;
+        font-size: 0.875rem;
+
+        // Responsividade
+        @media (max-width: 768px) {
+          font-size: 0.8125rem;
+        }
+
+        :ng-deep .p-select-label {
+          font-size: 0.875rem;
+          padding: 0.375rem 0.75rem;
+
+          // Responsividade
+          @media (max-width: 768px) {
+            font-size: 0.8125rem;
+            padding: 0.3125rem 0.625rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.25rem;
+  overflow-x: hidden; // Prevenir rolagem horizontal
+
+  // Responsividade
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .col-12 {
+    grid-column: span 12;
+  }
+
+  .col-6 {
+    grid-column: span 6;
+
+    // Responsividade
+    @media (max-width: 1024px) {
+      grid-column: span 6;
+    }
+
+    @media (max-width: 768px) {
+      grid-column: span 12; // Ocupar linha inteira em mobile
+    }
+  }
+
+  .col-4 {
+    grid-column: span 4;
+
+    // Responsividade
+    @media (max-width: 1024px) {
+      grid-column: span 3;
+    }
+
+    @media (max-width: 768px) {
+      grid-column: span 12; // Ocupar linha inteira em mobile
+    }
+  }
+
+  .col-8 {
+    grid-column: span 8;
+
+    // Responsividade
+    @media (max-width: 1024px) {
+      grid-column: span 6;
+    }
+
+    @media (max-width: 768px) {
+      grid-column: span 12; // Ocupar linha inteira em mobile
+    }
+  }
+}
+
+.field-group {
+  .field-label {
+    display: block;
+    font-weight: 600;
+    color: var(--p-text-color, #374151);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+
+    // Dark mode
+    @media (prefers-color-scheme: dark) {
+      color: var(--p-text-color, #f3f4f6);
+    }
+
+    // Responsividade
+    @media (max-width: 768px) {
+      font-size: 0.8125rem;
+      margin-bottom: 0.375rem;
+    }
+
+    .required {
+      color: var(--p-red-500, #ef4444);
+      margin-left: 0.25rem;
+    }
+  }
+
+  .field-hint {
+    font-size: 0.75rem;
+    color: var(--p-text-muted-color, #6b7280);
+    margin-top: 0.25rem;
+
+    // Dark mode
+    @media (prefers-color-scheme: dark) {
+      color: var(--p-text-muted-color, #9ca3af);
+    }
+
+    // Responsividade
+    @media (max-width: 768px) {
+      font-size: 0.6875rem;
+    }
+  }
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem; // Aumentado espaçamento entre botões
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--p-content-border-color, #e5e7eb);
+  background: var(--p-surface-50, #f9fafb);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--p-content-border-color, #e5e7eb);
+  background: var(--p-surface-50, #f9fafb);
+  margin: 0;
+  /* Remove margem padrão do dialog */
+  width: 100%;
+  /* Garante que ocupe toda a largura */
+  box-sizing: border-box;
+  /* Inclui padding no cálculo da largura */
+}
+
+// Z-index fixes para dropdowns e calendar
+:ng-deep .p-dialog {
+  .p-dialog-content {
+    overflow: visible !important;
+    height: calc(80vh - 130px) !important; // Altura fixa do conteúdo
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .p-dialog-footer {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    flex-shrink: 0 !important; // Footer não encolhe
+  }
+
+  // Garantir altura consistente do modal
+  .p-dialog {
+    min-height: 80vh !important;
+    max-height: 80vh !important;
+  }
+}
+
+// Abas do Modal
+.modal-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--p-content-border-color, #e5e7eb);
+  background: linear-gradient(to bottom, var(--p-surface-50, #f9fafb), var(--p-surface-100, #f3f4f6));
+  border-radius: 0.5rem 0.5rem 0 0;
+  overflow-x: hidden; // Prevenir rolagem horizontal
+  min-height: 60px; // Altura mínima para não cortar
+
+  // Responsividade
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 0.25rem;
+    min-height: auto; // Resetar altura mínima em vertical
+  }
+
+  @media (max-width: 360px) {
+    // Telas muito pequenas
+    padding: 0.5rem;
+  }
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border: none;
+  background: transparent;
+  color: var(--p-text-muted-color, #6b7280);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  position: relative;
+  white-space: nowrap; // Evitar quebra de texto
+  min-width: 150px; // Largura mínima para não cortar
+  flex: 1; // Distribuir espaço igualmente
+
+  // Responsividade
+  @media (max-width: 768px) {
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    min-width: 120px; // Reduzir mas manter legível
+    justify-content: center;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem 1rem;
+    font-size: 0.8125rem;
+    min-width: 100px; // Mínimo para não cortar texto
+    justify-content: center;
+    flex: none; // Remover flex para não comprimir
+    width: 100%; // Ocupar largura disponível
+  }
+
+  &:hover {
+    background: rgba(59, 130, 246, 0.05);
+    color: var(--p-text-color, #374151);
+  }
+
+  &.active {
+    color: var(--p-primary-color, #3b82f6);
+    background: var(--p-surface-0, #ffffff);
+    border-bottom-color: var(--p-primary-color, #3b82f6);
+    box-shadow: 0 -1px 3px rgba(59, 130, 246, 0.1);
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--p-primary-color, #3b82f6);
+    }
+  }
+
+  i {
+    font-size: 0.875rem;
+  }
+}
+
+// Wrapper para conteúdo com rolagem
+.modal-content-wrapper {
+  flex: 1;
+  overflow-y: auto; // Permitir scroll vertical
+  overflow-x: hidden; // Prevenir scroll horizontal
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0; // Permitir encolhimento
+
+  // Garantir scroll em mobile
+  @media (max-width: 768px) {
+    overflow-y: auto;
+    max-height: calc(90vh - 140px); // Reduzir altura calculada para mobile
+  }
+}
+
+// Formulário
+.time-entry-form {
+  padding: 1.5rem;
+  overflow-x: hidden; // Prevenir rolagem horizontal
+  overflow-y: visible; // Permitir que o conteúdo expanda
+  min-height: 0; // Permitir encolhimento
+
+  // Responsividade
+  @media (max-width: 768px) {
+    padding: 1rem;
+    overflow-y: visible;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1rem;
+}
+
+.col-12 {
+  grid-column: span 12;
+}
+
+.col-6 {
+  grid-column: span 6;
+
+  @media (max-width: 768px) {
+    grid-column: span 12; // Ocupar linha inteira em mobile
+  }
+}
+
+.col-4 {
+  grid-column: span 4;
+
+  @media (max-width: 768px) {
+    grid-column: span 12; // Ocupar linha inteira em mobile
+  }
+}
+
+.col-8 {
+  grid-column: span 8;
+
+  @media (max-width: 768px) {
+    grid-column: span 12; // Ocupar linha inteira em mobile
+  }
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field-label {
+  font-weight: 600;
+  color: var(--p-text-color, #374151);
+  font-size: 0.875rem;
+}
+
+.required {
+  color: var(--p-red-500, #ef4444);
+  margin-left: 0.25rem;
+}
+
+// Conteúdo das abas
+.timeentries-content {
+  padding: 1.5rem;
+  overflow-y: auto; // Permitir scroll
+  min-height: 0; // Permitir encolhimento
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    overflow-y: auto;
+  }
+}
+
+// Apontamento Ativo
+.active-time-entry-card {
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+
+  .active-time-entry-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: var(--p-green-600, #059669);
+
+    i {
+      font-size: 1rem;
+    }
+  }
+
+  .active-time-entry-details {
+    margin-bottom: 1rem;
+
+    .detail-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+      font-size: 0.875rem;
+
+      .label {
+        font-weight: 600;
+        color: var(--p-text-color, #374151);
+        min-width: 60px;
+      }
+
+      .value {
+        color: var(--p-text-color, #6b7280);
+        flex: 1;
+      }
+    }
+  }
+
+  .active-time-entry-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+// Listagem de Apontamentos
+.timeentries-list {
+  .list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h4 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--p-text-color, #374151);
+    }
+  }
+}
+
+.timeentries-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.timeentry-card {
+  background: var(--p-surface-0, #ffffff);
+  border: 1px solid var(--p-content-border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background: var(--p-surface-0, #ffffff);
+  transition: all 0.2s;
+
+  // Dark mode
+  @media (prefers-color-scheme: dark) {
+    background: var(--p-surface-0, #1f2937);
+    border-color: var(--p-content-border-color, #374151);
+  }
+
+  // Responsividade
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+  }
+
+  &:hover {
+    border-color: var(--p-primary-color, #3b82f6);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    // Dark mode
+    @media (prefers-color-scheme: dark) {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  &.active {
+    border-color: var(--p-primary-color, #3b82f6);
+    background: var(--p-primary-50, #eff6ff);
+
+    // Dark mode
+    @media (prefers-color-scheme: dark) {
+      background: rgba(59, 130, 246, 0.1);
+    }
+  }
+
+  .entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+
+    // Responsividade
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+      margin-bottom: 0.375rem;
+    }
+
+    .entry-type {
+      font-weight: 600;
+      color: var(--p-primary-color, #3b82f6);
+      font-size: 0.875rem;
+
+      // Dark mode
+      @media (prefers-color-scheme: dark) {
+        color: var(--p-primary-color, #60a5fa);
+      }
+
+      // Responsividade
+      @media (max-width: 768px) {
+        font-size: 0.8125rem;
+      }
+    }
+
+    .entry-date {
+      font-size: 0.75rem;
+      color: var(--p-text-muted-color, #6b7280);
+
+      // Dark mode
+      @media (prefers-color-scheme: dark) {
+        color: var(--p-text-muted-color, #9ca3af);
+      }
+
+      // Responsividade
+      @media (max-width: 768px) {
+        font-size: 0.6875rem;
+      }
+    }
+  }
+
+  .entry-description {
+    color: var(--p-text-color, #374151);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+
+    // Dark mode
+    @media (prefers-color-scheme: dark) {
+      color: var(--p-text-color, #e5e7eb);
+    }
+
+    // Responsividade
+    @media (max-width: 768px) {
+      font-size: 0.8125rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .entry-details {
+    background: var(--p-surface-50, #f9fafb);
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+
+    // Dark mode
+    @media (prefers-color-scheme: dark) {
+      background: var(--p-surface-50, #374151);
+    }
+
+    // Responsividade
+    @media (max-width: 768px) {
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.25rem;
+      font-size: 0.75rem;
+
+      // Responsividade
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.125rem;
+        font-size: 0.6875rem;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .detail-label {
+        font-weight: 500;
+        color: var(--p-text-muted-color, #6b7280);
+        min-width: 70px;
+
+        // Dark mode
+        @media (prefers-color-scheme: dark) {
+          color: var(--p-text-muted-color, #9ca3af);
+        }
+
+        // Responsividade
+        @media (max-width: 768px) {
+          min-width: auto;
+        }
+      }
+
+      .detail-value {
+        color: var(--p-text-color, #374151);
+        font-weight: 400;
+        text-align: right;
+        flex: 1;
+
+        // Dark mode
+        @media (prefers-color-scheme: dark) {
+          color: var(--p-text-color, #e5e7eb);
+        }
+
+        // Responsividade
+        @media (max-width: 768px) {
+          text-align: left;
+        }
+      }
+    }
+  }
+
+  .entry-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    // Responsividade
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .entry-duration {
+      font-size: 0.75rem;
+      color: var(--p-text-muted-color, #6b7280);
+      font-weight: 500;
+
+      // Dark mode
+      @media (prefers-color-scheme: dark) {
+        color: var(--p-text-muted-color, #9ca3af);
+      }
+
+      // Responsividade
+      @media (max-width: 768px) {
+        font-size: 0.6875rem;
+      }
+    }
+
+    .active-indicator {
+      background: var(--p-success-color, #10b981);
+      color: white;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+
+      // Responsividade
+      @media (max-width: 768px) {
+        font-size: 0.5625rem;
+        padding: 0.0625rem 0.375rem;
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--p-text-muted-color, #6b7280);
+
+  i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  p {
+    margin: 0.5rem 0;
+  }
+}
+
+// Z-index fixes para dropdowns e calendar
+:ng-deep .p-dialog {
+  .p-dialog-content {
+    overflow: visible !important;
+  }
+}
+
+:ng-deep .p-select-overlay,
+:ng-deep .p-datepicker {
+  z-index: 1100 !important;
+}
+
+// Estilo melhorado para selects e date picker
+:ng-deep .p-select,
+:ng-deep .p-datepicker {
+  width: 100%;
+}
+
+:ng-deep .p-datepicker-input {
+  width: 100%;
+}
+
+// Prevenir rolagem horizontal em todo o modal
+::ng-deep .p-dialog-content {
+  overflow-x: hidden !important;
+}
+
+// Garantir que nenhum elemento cause overflow horizontal
+* {
+  box-sizing: border-box;
+}
+
+// Ajuste final para garantir scroll completo
+@media (max-width: 768px) {
+  .modal-content-wrapper {
+    padding-bottom: 20px; // Reduzir espaço para o footer
+  }
+
+  .time-entry-form {
+    margin-bottom: 10px; // Reduzir espaço extra antes do final
+  }
+}
+
+// Regra específica para mobile - força campos em linha única
+@media (max-width: 768px) {
+  .time-entry-form .form-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  .time-entry-form .form-grid>div {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .time-entry-form,
+  .form-grid,
+  .ticket-info,
+  .modal-tabs {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  // Garantir que campos ocupem linha inteira em telas pequenas
+  .form-grid {
+    grid-template-columns: 1fr !important; // Forçar uma coluna
+    gap: 1rem !important;
+  }
+
+  // Forçar todas as colunas a ocuparem linha inteira
+  .form-grid .col-6,
+  .form-grid .col-4,
+  .form-grid .col-8 {
+    grid-column: 1 / -1 !important; // Ocupar da primeira à última coluna
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  // Ajuste específico para abas em mobile
+  .tab-button {
+    text-overflow: ellipsis; // Adicionar "..." se couber
+    overflow: hidden;
+  }
+
+  .modal-tabs {
+    width: 100%; // Garantir largura total
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--p-text-muted-color, #6b7280);
+
+  i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  p {
+    margin: 0.5rem 0;
+  }
+}
+
+// Z-index fixes para dropdowns e calendar
+:ng-deep .p-dialog {
+  .p-dialog-content {
+    overflow: visible !important;
+  }
+}
+
+:ng-deep .p-select-overlay,
+:ng-deep .p-datepicker {
+  z-index: 1100 !important;
+}
+
+// Estilo melhorado para selects e date picker
+:ng-deep .p-select,
+:ng-deep .p-datepicker {
+  width: 100%;
+}
+
+:ng-deep .p-datepicker-input {
+  width: 100%;
+}
+
+// Prevenir rolagem horizontal em todo o modal
+::ng-deep .p-dialog-content {
+  overflow-x: hidden !important;
+}

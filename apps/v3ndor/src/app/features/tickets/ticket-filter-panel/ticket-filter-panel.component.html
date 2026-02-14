@@ -1,0 +1,48 @@
+<div class="v-card">
+  <div class="v-card-header">
+    <i class="pi pi-filter"></i>
+    <h2>Filtros</h2>
+  </div>
+
+  <div class="v-card-body">
+    <div class="v-form">
+      <div class="v-form-row cols-3">
+        <div class="v-field">
+          <label for="situation">Situação</label>
+          <p-select id="situation" [(ngModel)]="situation" [options]="situationOptions" optionLabel="label"
+            optionValue="value" placeholder="Selecione..." [style]="{ width: '100%' }" />
+        </div>
+
+        <div class="v-field">
+          <label for="dateFrom">Data de</label>
+          <p-datepicker id="dateFrom" [(ngModel)]="dateFrom" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
+            [showIcon]="true" [style]="{ width: '100%' }" />
+        </div>
+
+        <div class="v-field">
+          <label for="dateTo">Data até</label>
+          <p-datepicker id="dateTo" [(ngModel)]="dateTo" dateFormat="dd/mm/yy" placeholder="dd/mm/aaaa"
+            [showIcon]="true" [style]="{ width: '100%' }" />
+        </div>
+      </div>
+
+      <div class="v-form-row cols-3">
+        <div class="v-field">
+          <label for="responsible">Responsável</label>
+          <input id="responsible" type="text" pInputText [(ngModel)]="responsibleId" placeholder="ID do responsável" />
+        </div>
+
+        <div class="v-field">
+          <label for="developer">Desenvolvedor</label>
+          <input id="developer" type="text" pInputText [(ngModel)]="developerId" placeholder="ID do desenvolvedor" />
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="v-card-footer">
+    <p-button label="Buscar" [icon]="loading ? 'pi pi-spin pi-spinner' : 'pi pi-search'" [loading]="loading"
+      [disabled]="loading" (onClick)="onSearch()" />
+  </div>
+</div>

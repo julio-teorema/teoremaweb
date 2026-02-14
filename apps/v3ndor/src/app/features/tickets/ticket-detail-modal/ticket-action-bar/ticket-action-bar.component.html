@@ -1,0 +1,45 @@
+<div class="action-bar">
+  <div class="action-buttons">
+    <p-button icon="pi pi-comment" label="Comentário" [outlined]="activeAction() !== 'comment'"
+      [severity]="activeAction() === 'comment' ? 'primary' : 'secondary'" size="small"
+      (onClick)="setAction('comment')" />
+    <p-button icon="pi pi-paperclip" label="Anexo" [outlined]="activeAction() !== 'attachment'"
+      [severity]="activeAction() === 'attachment' ? 'primary' : 'secondary'" size="small"
+      (onClick)="setAction('attachment')" />
+    <p-button icon="pi pi-clock" [label]="getApontamentoButtonLabel()" [severity]="getApontamentoButtonSeverity()"
+      variant="outlined" size="small" (onClick)="openTimeEntryModal()" />
+  </div>
+
+  <div class="action-input">
+    @switch (activeAction()) {
+    @case ('comment') {
+    <div class="comment-input">
+      <div class="comment-textarea-container">
+        <textarea pTextarea [autoResize]="true" [rows]="3" placeholder="Digite seu comentário..."
+          [ngModel]="commentText()" (ngModelChange)="commentText.set($event)" class="w-full"
+          (keydown.control.enter)="onSendComment()"></textarea>
+      </div>
+      <p-button icon="pi pi-send" label="Enviar" size="small" [loading]="sending()" [disabled]="!commentText().trim()"
+        (onClick)="onSendComment()" />
+    </div>
+    }
+    @case ('attachment') {
+    <div class="attachment-placeholder">
+      <i class="pi pi-cloud-upload" style="font-size: 1.25rem;"></i>
+      <span>Arraste um arquivo ou clique para selecionar</span>
+    </div>
+    }
+    @case ('timeentry') {
+    <!-- Conteúdo removido - botão abre modal diretamente -->
+    <div class="timeentry-placeholder">
+      <span>Clique em "Apontamento" para gerenciar apontamentos</span>
+    </div>
+    }
+    }
+  </div>
+</div>
+
+<!-- Time Entry Modal -->
+<app-time-entry-modal [ticket]="ticket" [(visible)]="showTimeEntryModal" [ticketTimeEntries]="getTimeEntries()"
+  [activeTimeEntry]="activeTimeEntry()" (timeEntryAdded)="onTimeEntryModalSaved($event)"
+  (timeEntryStopped)="onTimeEntryStopped()" />

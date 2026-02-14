@@ -84,6 +84,7 @@
         <button class="menu-toggle" (click)="toggleMobileMenu()">
           <i class="pi pi-bars"></i>
         </button>
+        <h1 class="page-title">Chamados</h1>
       </div>
 
       <div class="header-right">
@@ -102,17 +103,17 @@
         <div class="header-divider"></div>
 
         @if (authService.currentUser(); as user) {
-        <div class="header-user">
-          <div class="user-avatar">
-            {{ user.name.charAt(0).toUpperCase() }}
-          </div>
-          <span class="user-name">{{ user.name }}</span>
+        <div class="user-menu-container">
+          <button class="user-menu-button" (click)="toggleUserMenu($event)">
+            <i class="pi pi-user"></i>
+            <span>{{ user.name }}</span>
+            <i class="pi pi-chevron-down"></i>
+          </button>
+
+          <p-menu #userMenu [model]="userMenuItems" [popup]="true" [appendTo]="'body'"
+            [style]="{'min-width': '150px'}"></p-menu>
         </div>
         }
-
-        <button class="logout-btn" (click)="logout()" title="Sair">
-          <i class="pi pi-sign-out"></i>
-        </button>
       </div>
     </header>
 

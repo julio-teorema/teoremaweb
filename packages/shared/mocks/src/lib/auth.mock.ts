@@ -26,19 +26,19 @@ export const MOCK_COMPANY_GROUPS: CompanyGroup[] = [
 
 export const MOCK_USERS: User[] = [
   {
-    id: '1',
+    id: '52ce1683-d7fd-4182-9478-e29330c2ec08',
     email: 'admin@v3ndor.com',
     name: 'Administrador',
     company_groups: [MOCK_COMPANY_GROUPS[0], MOCK_COMPANY_GROUPS[1]],
   },
   {
-    id: '2',
+    id: '52ce1683-d7fd-4182-9478-e29330c2ec08',
     email: 'user@v3ndor.com',
     name: 'Usuário Teste',
     company_groups: [MOCK_COMPANY_GROUPS[0]],
   },
   {
-    id: '3',
+    id: '52ce1683-d7fd-4182-9478-e29330c2ec08',
     email: 'dev@v3ndor.com',
     name: 'Desenvolvedor',
     company_groups: [MOCK_COMPANY_GROUPS[1], MOCK_COMPANY_GROUPS[2]],

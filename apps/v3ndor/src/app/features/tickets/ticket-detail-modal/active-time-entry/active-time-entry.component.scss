@@ -1,0 +1,119 @@
+.active-time-entry {
+  padding: 1.25rem;
+  border: 1px solid var(--p-success-color, #10b981);
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);
+  box-shadow: 0 1px 3px 0 rgba(16, 185, 129, 0.1), 0 1px 2px 0 rgba(16, 185, 129, 0.06);
+
+  .active-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+
+    i {
+      color: var(--p-success-color, #10b981);
+      font-size: 1.25rem;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    span {
+      font-weight: 600;
+      color: var(--p-success-color, #10b981);
+      font-size: 0.95rem;
+    }
+  }
+
+  .active-info {
+    margin-bottom: 1.25rem;
+
+    p {
+      margin: 0.5rem 0;
+      font-size: 0.875rem;
+      color: var(--p-text-color, #374151);
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+
+      strong {
+        font-weight: 600;
+        color: var(--p-text-color, #1f2937);
+        min-width: 70px;
+      }
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // Animação para o ícone de relógio
+  @keyframes pulse {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  // Estilo melhorado para o botão
+  :ng-deep .p-button {
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2), 0 2px 4px -1px rgba(239, 68, 68, 0.1);
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .active-time-entry {
+    padding: 1rem;
+
+    .active-header {
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+
+      i {
+        font-size: 1.125rem;
+      }
+
+      span {
+        font-size: 0.875rem;
+      }
+    }
+
+    .active-info {
+      margin-bottom: 1rem;
+
+      p {
+        font-size: 0.8125rem;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        strong {
+          min-width: auto;
+        }
+      }
+    }
+
+    :ng-deep .p-button {
+      width: 100%;
+    }
+  }
+}

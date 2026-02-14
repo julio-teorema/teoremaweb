@@ -1,0 +1,18 @@
+<div class="active-filters">
+  <div class="filters-row">
+    <span class="filters-label">Filtros:</span>
+    <div class="chips-container">
+      @for (chip of chips; track chip.key) {
+      <p-chip [removable]="chip.removable" (onRemove)="onRemoveChip(chip)">
+        <span class="chip-content">
+          <strong>{{ chip.label }}:</strong> {{ chip.value }}
+        </span>
+      </p-chip>
+      }
+      @if (chips.length === 0) {
+      <span class="no-filters">Nenhum filtro aplicado</span>
+      }
+    </div>
+    <p-button label="Alterar filtros" icon="pi pi-filter" [text]="true" size="small" (onClick)="onEditFilters()" />
+  </div>
+</div>

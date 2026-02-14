@@ -1,0 +1,135 @@
+<p-dialog [header]="headerTitle()" [(visible)]="visible" [modal]="true" [maximizable]="true" [draggable]="false"
+  [resizable]="false" [style]="{ width: '90vw', height: '85vh' }"
+  [breakpoints]="{ '1200px': '95vw', '768px': '95vw', '480px': '95vw' }" styleClass="ticket-detail-dialog"
+  (onHide)="onHide()"
+  [contentStyle]="{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }">
+  <ng-template pTemplate="header">
+    <div class="dialog-header">
+      <div class="dialog-header-left">
+        <span class="dialog-header-number">#{{ ticket()?.ticket_number_teorema }}</span>
+        @if (ticket(); as t) {
+        @if (t.created_at) {
+        <p-tag [value]="formatDateShort(t.created_at)" severity="secondary" [rounded]="true" />
+        }
+        @if (t.urgent === 1) {
+        <p-tag severity="danger" value="URGENTE" [rounded]="true" />
+        }
+        @if (t.status) {
+        <p-tag [value]="t.status.description" severity="info" [rounded]="true" />
+        }
+        @if (activeLog(); as log) {
+        <span class="active-log-badge">
+          <i class="pi pi-spin pi-clock"></i>
+          {{ log.user?.name ?? 'Usuário' }} apontando
+        </span>
+        }
+        }
+      </div>
+    </div>
+  </ng-template>
+
+  @if (loading()) {
+  <div class="modal-body">
+    <div class="col-left">
+      <div class="skeleton-pad">
+        @for (_ of [1,2,3,4,5,6,7,8]; track $index) {
+        <p-skeleton height="1.5rem" styleClass="mb-3" />
+        }
+      </div>
+    </div>
+    <div class="col-center">
+      <div class="skeleton-pad">
+        <p-skeleton height="3rem" styleClass="mb-3" />
+        <p-skeleton height="6rem" styleClass="mb-3" />
+        <p-skeleton height="4rem" />
+      </div>
+    </div>
+    <div class="col-right">
+      <div class="skeleton-pad">
+        @for (_ of [1,2,3,4]; track $index) {
+        <div class="timeline-skeleton-item">
+          <p-skeleton shape="circle" size="2.5rem" />
+          <div class="flex-1">
+            <p-skeleton height="1rem" width="40%" styleClass="mb-2" />
+            <p-skeleton height="2rem" />
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  } @else if (ticket(); as t) {
+  <div class="modal-body">
+    <!-- Coluna esquerda: info compacta + campos editáveis -->
+    <div class="col-left">
+      <app-ticket-info-panel [ticket]="t" (ticketUpdated)="onTicketUpdated($event)" />
+    </div>
+
+    <!-- Coluna central: resumo, problema, tarefas -->
+    <div class="col-center">
+      <div class="col-center-scroll">
+        <!-- Ações do Ticket (Sem título) -->
+        <div class="ticket-actions-section">
+          <app-ticket-actions [ticket]="t" (ticketUpdated)="onTicketUpdated($event)" />
+        </div>
+
+        <!-- Resumo -->
+        @if (t.summary) {
+        <div class="content-section">
+          <h3 class="content-section-title">
+            <i class="pi pi-file-edit"></i>
+            Resumo
+          </h3>
+          <div class="content-text">{{ t.summary }}</div>
+        </div>
+        }
+
+        <!-- Problema -->
+        @if (t.problem) {
+        <div class="content-section">
+          <h3 class="content-section-title">
+            <i class="pi pi-exclamation-triangle"></i>
+            Problema
+          </h3>
+          <div class="content-text">{{ t.problem }}</div>
+        </div>
+        }
+
+        <!-- Tarefas -->
+        @if (t.tasks.length) {
+        <div class="content-section">
+          <h3 class="content-section-title">
+            <i class="pi pi-check-square"></i>
+            Tarefas ({{ t.tasks.length }})
+          </h3>
+          <div class="task-list">
+            @for (task of t.tasks; track task.id) {
+            <div class="task-item">
+              <p-checkbox [(ngModel)]="task.finished" [binary]="true" [disabled]="true" />
+              <span class="task-label" [class.task-done]="task.finished">
+                {{ task.description }}
+              </span>
+              @if (task.status) {
+              <span class="task-status">{{ task.status.description }}</span>
+              }
+            </div>
+            }
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Coluna direita: timeline -->
+    <div class="col-right">
+      <div class="col-right-scroll">
+        <app-ticket-timeline [entries]="timelineEntries()" />
+      </div>
+    </div>
+
+    <!-- Action bar ocupa centro + direita -->
+    <app-ticket-action-bar class="action-bar-span" [ticket]="t" (commentAdded)="onCommentAdded($event)"
+      (timeEntryAdded)="onTimeEntryAdded($event)" />
+  </div>
+  }
+</p-dialog>

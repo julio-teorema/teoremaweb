@@ -1,0 +1,21 @@
+<div class="v-page-header mobile-only">
+  <h1>Chamados</h1>
+</div>
+
+<div class="v-page-content">
+  @if (viewState() === 'filters') {
+  <app-ticket-filter-panel [filters]="currentFilters()" [loading]="loading()"
+    (searchFilters)="onSearchFilters($event)" />
+  }
+
+  @if (viewState() === 'results') {
+  <app-active-filters [filters]="currentFilters()" (editFilters)="onEditFilters()"
+    (removeFilter)="onRemoveFilter($event)" />
+
+  <app-advanced-grid [data]="tickets()" [columns]="columns" [config]="gridConfig" [loading]="loading()"
+    (rowSelect)="onRowClick($event)" />
+  }
+</div>
+
+<app-ticket-detail-modal [ticketId]="selectedTicketId()" [visible]="modalVisible()"
+  (visibleChange)="onModalVisibleChange($event)" (ticketUpdated)="onTicketUpdated($event)" />

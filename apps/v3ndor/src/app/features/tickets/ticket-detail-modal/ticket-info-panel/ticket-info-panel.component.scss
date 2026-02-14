@@ -1,0 +1,296 @@
+.info-panel {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    background: var(--p-surface-0);
+  }
+}
+
+.info-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--v-text-muted, var(--p-text-muted-color));
+  margin: 0 0 0.75rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--p-content-border-color, #e5e7eb);
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    color: var(--p-text-muted-color);
+    border-bottom-color: var(--p-content-border-color);
+  }
+
+  i {
+    font-size: 0.625rem;
+  }
+}
+
+.info-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.875rem;
+
+  &.critical-field {
+    .info-label::after {
+      content: ' *';
+      color: var(--p-red-500, #ef4444);
+      font-weight: 600;
+    }
+  }
+}
+
+.info-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--v-text-muted, var(--p-text-muted-color));
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    color: var(--p-text-muted-color);
+  }
+}
+
+.info-value {
+  font-size: 0.8125rem;
+  color: var(--v-text-primary, var(--p-text-color));
+  font-weight: 500;
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    color: var(--p-text-color);
+  }
+
+  &.clickable {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.15s;
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--p-surface-100, rgba(0, 0, 0, 0.04));
+
+      // Dark mode
+      :root.dark &,
+      .dark & {
+        background-color: var(--p-surface-100);
+      }
+    }
+
+    .edit-icon {
+      font-size: 0.625rem;
+      opacity: 0;
+      transition: opacity 0.15s;
+      color: var(--p-primary-color, #3b82f6);
+    }
+
+    &:hover .edit-icon,
+    &:focus-visible .edit-icon {
+      opacity: 1;
+    }
+  }
+}
+
+.editable-field {
+  position: relative;
+}
+
+.edit-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  font-size: 0.625rem;
+  transition: background-color 0.15s;
+
+  &.save {
+    background-color: var(--p-green-500, #22c55e);
+    color: #fff;
+
+    &:hover {
+      background-color: var(--p-green-600, #16a34a);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &.cancel {
+    background-color: var(--p-surface-200, #e5e7eb);
+    color: var(--v-text-secondary, var(--p-text-color));
+
+    // Dark mode
+    :root.dark &,
+    .dark & {
+      background-color: var(--p-surface-200);
+      color: var(--p-text-color);
+    }
+
+    &:hover {
+      background-color: var(--p-surface-300, #d1d5db);
+
+      // Dark mode
+      :root.dark &,
+      .dark & {
+        background-color: var(--p-surface-300);
+      }
+    }
+  }
+}
+
+.urgent-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+// Botões de Situação
+.situation-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.situation-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &.close-btn {
+    background-color: var(--p-red-500, #ef4444);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background-color: var(--p-red-600, #dc2626);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &.reopen-btn {
+    background-color: var(--p-green-500, #22c55e);
+    color: #fff;
+
+    &:hover:not(:disabled) {
+      background-color: var(--p-green-600, #16a34a);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.2);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  i {
+    font-size: 0.75rem;
+  }
+}
+
+// Estilos para inputs de edição
+::ng-deep .edit-input-text {
+  font-size: 0.8125rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--p-content-border-color, #e5e7eb);
+  border-radius: 0.25rem;
+  transition: border-color 0.15s;
+  width: 100%;
+  background: var(--p-surface-0);
+  color: var(--p-text-color);
+
+  // Dark mode
+  :root.dark &,
+  .dark & {
+    border-color: var(--p-content-border-color);
+    background: var(--p-surface-0);
+    color: var(--p-text-color);
+  }
+
+  &:focus {
+    border-color: var(--p-primary-color, #3b82f6);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  }
+}
+
+::ng-deep .edit-input-number {
+  .p-inputnumber-input {
+    width: 4rem;
+    font-size: 0.8125rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+::ng-deep .edit-dropdown {
+  .p-dropdown {
+    width: 100%;
+    font-size: 0.8125rem;
+  }
+
+  .p-dropdown-label {
+    padding: 0.375rem 0.5rem;
+  }
+}
+
+::ng-deep .edit-datepicker {
+  .p-datepicker-input {
+    font-size: 0.8125rem;
+    padding: 0.25rem 0.5rem;
+    width: 100%;
+  }
+}
+
+.info-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.125rem;
+}
