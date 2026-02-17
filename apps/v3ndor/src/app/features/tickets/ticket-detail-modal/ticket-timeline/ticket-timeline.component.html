@@ -43,7 +43,8 @@
       </ng-template>
 
       <ng-template #content let-entry>
-        <div class="timeline-entry" [attr.data-type]="entry.type" [class.entry-open]="entry.isOpen">
+        <div class="timeline-entry" [attr.data-type]="entry.type" [class.entry-open]="entry.isOpen"
+          [class.entry-highlighted]="isEntryHighlighted(entry)">
           <div class="timeline-entry-header">
             <span class="timeline-entry-type">{{ entry.title }}</span>
             <span class="timeline-entry-date">{{ formatDate(entry.date) }}</span>

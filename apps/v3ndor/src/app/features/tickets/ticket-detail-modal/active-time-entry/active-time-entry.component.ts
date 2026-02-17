@@ -31,6 +31,22 @@ export class ActiveTimeEntryComponent {
 
   sending = signal(false);
 
+  // Função para converter data para ISO string com fuso horário local
+  private toLocalISOString(date: Date): string {
+    const offset = -date.getTimezoneOffset();
+    const offsetSign = offset >= 0 ? '+' : '-';
+    const offsetHours = Math.floor(Math.abs(offset) / 60).toString().padStart(2, '0');
+    const offsetMinutes = (Math.abs(offset) % 60).toString().padStart(2, '0');
+
+    return date.getFullYear() +
+      '-' + (date.getMonth() + 1).toString().padStart(2, '0') +
+      '-' + date.getDate().toString().padStart(2, '0') +
+      'T' + date.getHours().toString().padStart(2, '0') +
+      ':' + date.getMinutes().toString().padStart(2, '0') +
+      ':' + date.getSeconds().toString().padStart(2, '0') +
+      offsetSign + offsetHours + ':' + offsetMinutes;
+  }
+
   onStopTimeEntry(): void {
     if (!this.activeTimeEntry?.id) return;
 
@@ -39,7 +55,8 @@ export class ActiveTimeEntryComponent {
     this.ticketService
       .stopTimeEntry(this.ticketId, {
         time_entry_id: this.activeTimeEntry.id,
-        end_date: new Date().toISOString(),
+        end_date: this.toLocalISOString(new Date()),
+        description: this.activeTimeEntry.description || '',
       })
       .subscribe({
         next: () => {

@@ -24,6 +24,19 @@
   border: 1px solid var(--p-content-border-color, #e5e7eb);
   border-radius: 0.375rem;
   flex: 1;
+  transition: all 0.3s ease;
+
+  // Estado urgente ativo
+  &.urgent-active {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+    border-color: rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.1), 0 2px 4px rgba(239, 68, 68, 0.1);
+
+    .action-label {
+      color: var(--p-red-600, #dc2626);
+      font-weight: 700;
+    }
+  }
 
   // Responsividade
   @media (max-width: 768px) {
@@ -145,10 +158,25 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  justify-content: space-between;
+
+  .urgent-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.375rem 0.75rem;
+    margin-left: auto;
+
+    // Responsividade
+    @media (max-width: 768px) {
+      font-size: 0.6875rem;
+      padding: 0.3125rem 0.625rem;
+    }
+  }
 
   // Responsividade
   @media (max-width: 768px) {
-    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.375rem;
   }
 }
 

@@ -2,14 +2,12 @@
   <!-- Situação e Urgente - Lado a Lado -->
   <div class="actions-row">
     <!-- Urgente - Toggle Switch (agora primeiro) -->
-    <div class="action-field">
+    <div class="action-field" [class.urgent-active]="ticket.urgent === 1">
       <div class="action-label">Urgente</div>
       <div class="urgent-toggle">
         <p-toggleSwitch [ngModel]="ticket.urgent === 1" (ngModelChange)="toggleUrgent()" [disabled]="saving()" />
         @if (ticket.urgent === 1) {
-        <p-tag severity="danger" value="SIM" [rounded]="true" />
-        } @else {
-        <span class="action-value">Não</span>
+        <p-tag severity="danger" value="URGENTE" [rounded]="true" class="urgent-badge" />
         }
       </div>
     </div>

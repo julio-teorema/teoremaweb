@@ -66,9 +66,9 @@ export class TimeEntryModalComponent {
   @Input() set visible(value: boolean) {
     this._visible = value;
     if (value) {
-      // Quando o modal abrir, setar o status do ticket
-      if (this.ticket?.status?.id) {
-        this.timeEntryStatusId.set(this.ticket.status.id);
+      // Quando o modal abrir, se não há apontamento ativo, setar o status default
+      if (!this._activeTimeEntry) {
+        this.timeEntryStatusId.set('00c18a5e-59da-11ed-b4ca-0242ac1b0002'); // UUID de "Em Produção"
       }
       // Atualizar aba baseado no apontamento ativo
       this.updateActiveTab();
@@ -92,7 +92,7 @@ export class TimeEntryModalComponent {
   timeEntryStartDate = signal(new Date());
   timeEntryEndDate = signal<Date | null>(null);
   timeEntryTaskId = signal<string | null>(null);
-  timeEntryStatusId = signal<string>('');
+  timeEntryStatusId = signal<string>('2'); // Default: "Em Andamento"
   sending = signal(false);
 
   // Mudar aba para new quando há apontamento ativo (para editar)
@@ -132,7 +132,7 @@ export class TimeEntryModalComponent {
     this.timeEntryStartDate.set(this._activeTimeEntry.start_date ? new Date(this._activeTimeEntry.start_date) : new Date());
     this.timeEntryEndDate.set(this._activeTimeEntry.end_date ? new Date(this._activeTimeEntry.end_date) : null);
     this.timeEntryTaskId.set(this._activeTimeEntry.task_id?.toString() || null);
-    this.timeEntryStatusId.set(this.ticket?.status?.id || '');
+    this.timeEntryStatusId.set(this._activeTimeEntry.ticket_status_id || this.ticket?.status?.id || '2'); // Default: "Em Andamento"
   }
 
   // TimeEntry constants
@@ -165,14 +165,13 @@ export class TimeEntryModalComponent {
   });
 
   statusOptions = computed(() => {
-    // Lista fixa de status comuns - pode ser ajustada conforme necessário
+    // Lista fixa de status com UUIDs reais do banco
     const statuses = [
-      { id: '1', description: 'Aberto' },
-      { id: '2', description: 'Em Andamento' },
-      { id: '3', description: 'Aguardando Cliente' },
-      { id: '4', description: 'Resolvido' },
-      { id: '5', description: 'Fechado' },
-      { id: '6', description: 'Cancelado' }
+      { id: '00c04680-59da-11ed-bb24-0242ac1b0002', description: 'Aberta' },
+      { id: '00c18a5e-59da-11ed-b4ca-0242ac1b0002', description: 'Em Produção' },
+      { id: '00c13e46-59da-11ed-b374-0242ac1b0002', description: 'Produzir' },
+      { id: '00c28f8a-59da-11ed-a676-0242ac1b0002', description: 'Finalizada' },
+      { id: '00c1da18-59da-11ed-b0fd-0242ac1b0002', description: 'Cancelamento' }
     ];
 
     return statuses.map(status => ({
@@ -228,18 +227,60 @@ export class TimeEntryModalComponent {
     this.activeTab.set('history');
   }
 
+  // Função para converter data para ISO string com fuso horário local
+  private toLocalISOString(date: Date): string {
+    const offset = -date.getTimezoneOffset();
+    const offsetSign = offset >= 0 ? '+' : '-';
+    const offsetHours = Math.floor(Math.abs(offset) / 60).toString().padStart(2, '0');
+    const offsetMinutes = (Math.abs(offset) % 60).toString().padStart(2, '0');
+
+    return date.getFullYear() +
+      '-' + (date.getMonth() + 1).toString().padStart(2, '0') +
+      '-' + date.getDate().toString().padStart(2, '0') +
+      'T' + date.getHours().toString().padStart(2, '0') +
+      ':' + date.getMinutes().toString().padStart(2, '0') +
+      ':' + date.getSeconds().toString().padStart(2, '0') +
+      offsetSign + offsetHours + ':' + offsetMinutes;
+  }
+
   stopTimeEntry(): void {
     if (!this.activeTimeEntry) return;
+
+    const description = this.timeEntryDescription().trim();
+    if (!description) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção',
+        detail: 'Descrição é obrigatória ao encerrar o apontamento',
+        life: 3000,
+      });
+      return;
+    }
 
     this.sending.set(true);
 
     const endTime = this.timeEntryEndDate() || new Date();
 
-    // Chamada real à API para encerrar o apontamento
+    // Verificação segura para obter o ID do apontamento
+    if (!this.activeTimeEntry?.id) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Apontamento não encontrado',
+        life: 3000,
+      });
+      this.sending.set(false);
+      return;
+    }
+
+    const timeEntryId = this.activeTimeEntry.id;
+
+    // Encerrar o apontamento (a descrição já foi salva ao iniciar)
     this.ticketService
       .stopTimeEntry(this.ticket.id, {
-        time_entry_id: this.activeTimeEntry.id,
-        end_date: endTime.toISOString(),
+        time_entry_id: timeEntryId,
+        end_date: this.toLocalISOString(endTime),
+        description: description,
       })
       .subscribe({
         next: (updatedTicket) => {
@@ -274,30 +315,30 @@ export class TimeEntryModalComponent {
   }
 
   onStartTimeEntry(): void {
-    const description = this.timeEntryDescription().trim();
-    if (!description) {
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    // Validações
+    if (!this.timeEntryStatusId()) {
       this.messageService.add({
-        severity: 'warn',
-        summary: 'Atenção',
-        detail: 'Descrição é obrigatória',
+        severity: 'error',
+        summary: 'Erro',
+        detail: 'Status é obrigatório',
         life: 3000,
       });
       return;
     }
 
-    const user = this.authService.currentUser();
-    if (!user) return;
-
     this.sending.set(true);
 
     this.ticketService
       .startTimeEntry(this.ticket.id, {
-        description,
+        description: this.timeEntryDescription().trim(), // Deixar vazio se não preenchido
         user_id: user.id,
         attendance_type: this.timeEntryAttendanceType(),
         type: this.timeEntryType(),
         department_type: this.timeEntryDepartmentType(),
-        start_date: this.timeEntryStartDate().toISOString(),
+        start_date: this.toLocalISOString(this.timeEntryStartDate()),
         task_id: this.timeEntryTaskId() || undefined,
         ticket_status_id: this.timeEntryStatusId(),
       })
@@ -333,7 +374,7 @@ export class TimeEntryModalComponent {
     this.timeEntryStartDate.set(new Date());
     this.timeEntryEndDate.set(null);
     this.timeEntryTaskId.set(null);
-    this.timeEntryStatusId.set(this.ticket?.status?.id || '');
+    this.timeEntryStatusId.set('00c18a5e-59da-11ed-b4ca-0242ac1b0002'); // UUID de "Em Produção"
     this.sending.set(false);
   }
 }

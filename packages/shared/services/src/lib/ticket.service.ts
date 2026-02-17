@@ -79,11 +79,20 @@ export class TicketService {
   stopTimeEntry(ticketId: string, payload: {
     time_entry_id: string;
     end_date: string;
+    description: string;
   }): Observable<TicketDetail> {
     return this.http.post<{ success: boolean; data: TicketDetail; message: string }>(`${this.baseUrl}/tickets/${ticketId}/timeentry/stop`, payload)
       .pipe(
         map(response => response.data)
       );
+  }
+
+  updateTimeEntryDescription(ticketId: string, timeEntryId: string, description: string): Observable<TicketDetail> {
+    return this.http.patch<{ success: boolean; data: TicketDetail; message: string }>(`${this.baseUrl}/tickets/${ticketId}/timeentry/${timeEntryId}`, {
+      description: description
+    }).pipe(
+      map(response => response.data)
+    );
   }
 
   getActiveTimeEntry(ticketId: string, userId: string): Observable<TimeEntry | null> {

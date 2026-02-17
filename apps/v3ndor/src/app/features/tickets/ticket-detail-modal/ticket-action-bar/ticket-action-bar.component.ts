@@ -158,9 +158,20 @@ export class TicketActionBarComponent {
     this.updateActiveTimeEntry();
   }
 
-  onTimeEntryStopped(): void {
+  onStopTimeEntry(): void {
     // Limpar apontamento ativo imediatamente
     this.activeTimeEntry.set(null);
+
+    // Recarregar ticket para obter dados atualizados do apontamento encerrado
+    this.ticketService.getById(this.ticket.id).subscribe({
+      next: (updatedTicket: TicketDetail) => {
+        this.ticket = updatedTicket;
+        this.timeEntryAdded.emit(updatedTicket); // Emitir ticket atualizado
+      },
+      error: (err: { message?: string; status?: number; error?: string }) => {
+        console.error('Erro ao recarregar ticket após encerrar apontamento:', err);
+      }
+    });
   }
 
   // Sobrescrever para atualizar apontamentos ativos quando ticket mudar

@@ -27,11 +27,14 @@
               Descrição
               @if (activeTimeEntry) {
               <span class="required">*</span>
+              } @else {
+              <span class="optional">(opcional ao iniciar)</span>
               }
             </span>
             <textarea pTextarea [autoResize]="true" [rows]="4"
-              placeholder="Descreva detalhadamente as atividades realizadas..." [ngModel]="timeEntryDescription()"
-              (ngModelChange)="timeEntryDescription.set($event)" class="w-full"></textarea>
+              placeholder="Descreva as atividades (opcional ao iniciar, obrigatório ao encerrar)..."
+              [ngModel]="timeEntryDescription()" (ngModelChange)="timeEntryDescription.set($event)"
+              class="w-full"></textarea>
           </div>
         </div>
         <div class="col-6">
@@ -41,7 +44,7 @@
               <span class="required">*</span>
             </span>
             <p-select [options]="timeTypes" [(ngModel)]="timeEntryType" optionLabel="label" optionValue="value"
-              placeholder="Selecione o tipo" class="w-full" [style]="{ 'z-index': 1000 }" />
+              placeholder="Selecione o tipo" class="w-full" [style]="{ 'z-index': 1101 }" />
           </div>
         </div>
         <div class="col-6">
@@ -51,7 +54,7 @@
               <span class="required">*</span>
             </span>
             <p-select [options]="attendanceTypes" [(ngModel)]="timeEntryAttendanceType" optionLabel="label"
-              optionValue="value" placeholder="Selecione o atendimento" class="w-full" [style]="{ 'z-index': 999 }" />
+              optionValue="value" placeholder="Selecione o atendimento" class="w-full" [style]="{ 'z-index': 1102 }" />
           </div>
         </div>
         <div class="col-6">
@@ -61,7 +64,7 @@
               <span class="required">*</span>
             </span>
             <p-select [options]="statusOptions()" [(ngModel)]="timeEntryStatusId" optionLabel="label"
-              optionValue="value" placeholder="Selecione o status" class="w-full" [style]="{ 'z-index': 1002 }" />
+              optionValue="value" placeholder="Selecione o status" class="w-full" [style]="{ 'z-index': 1103 }" />
           </div>
         </div>
         <div class="col-6">
@@ -70,7 +73,7 @@
               Tarefa
             </span>
             <p-select [options]="taskOptions()" [(ngModel)]="timeEntryTaskId" optionLabel="label" optionValue="value"
-              placeholder="Selecione a tarefa (opcional)" class="w-full" [style]="{ 'z-index': 997 }" />
+              placeholder="Selecione a tarefa (opcional)" class="w-full" [style]="{ 'z-index': 1104 }" />
           </div>
         </div>
         <div class="col-6">

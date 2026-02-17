@@ -42,4 +42,4 @@
 <!-- Time Entry Modal -->
 <app-time-entry-modal [ticket]="ticket" [(visible)]="showTimeEntryModal" [ticketTimeEntries]="getTimeEntries()"
   [activeTimeEntry]="activeTimeEntry()" (timeEntryAdded)="onTimeEntryModalSaved($event)"
-  (timeEntryStopped)="onTimeEntryStopped()" />
+  (timeEntryStopped)="onStopTimeEntry()" />

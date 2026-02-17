@@ -67,7 +67,7 @@ export interface TicketComment {
   pub: boolean | number;
   dark_side?: boolean;
   user_id?: string;
-  user?: string;
+  user?: string | { name: string };
   created_at: string;
 }
 
@@ -177,6 +177,16 @@ export interface TicketDetail {
 
 export type TimelineEntryType = 'comment' | 'attachment' | 'task' | 'log' | 'opened' | 'timeentry';
 
+export interface TimelineCommentData {
+  id: string;
+  observation: string;
+  pub: boolean | number;
+  dark_side?: boolean;
+  user_id?: string;
+  user?: string | { name: string };
+  created_at: string;
+}
+
 export interface TicketTimelineEntry {
   type: TimelineEntryType;
   date: string;
@@ -185,7 +195,7 @@ export interface TicketTimelineEntry {
   title: string;
   description?: string;
   user?: string;
-  data?: unknown;
+  data?: TimelineCommentData | TicketLog | TicketTask | TicketDocument | unknown;
   startDate?: string | null;
   endDate?: string | null;
   isOpen?: boolean;

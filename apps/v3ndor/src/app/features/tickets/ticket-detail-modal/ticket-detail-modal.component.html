@@ -11,9 +11,6 @@
         @if (t.created_at) {
         <p-tag [value]="formatDateShort(t.created_at)" severity="secondary" [rounded]="true" />
         }
-        @if (t.urgent === 1) {
-        <p-tag severity="danger" value="URGENTE" [rounded]="true" />
-        }
         @if (t.status) {
         <p-tag [value]="t.status.description" severity="info" [rounded]="true" />
         }
@@ -123,7 +120,7 @@
     <!-- Coluna direita: timeline -->
     <div class="col-right">
       <div class="col-right-scroll">
-        <app-ticket-timeline [entries]="timelineEntries()" />
+        <app-ticket-timeline [entries]="timelineEntries()" [highlightedEntryId]="highlightedEntryId()" />
       </div>
     </div>
 

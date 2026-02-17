@@ -9,6 +9,7 @@ import {
   inject,
   OnChanges,
   SimpleChanges,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -22,6 +23,7 @@ import {
   TicketDetail,
   TicketTimelineEntry,
   TicketComment,
+  TimelineCommentData,
   TicketTask,
   TicketDocument,
   TicketLog,
@@ -53,6 +55,7 @@ import { TicketActionBarComponent } from './ticket-action-bar/ticket-action-bar.
 })
 export class TicketDetailModalComponent implements OnChanges {
   private readonly ticketService = inject(TicketService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   @Input() ticketId: string | null = null;
   @Input() visible = false;
@@ -62,6 +65,7 @@ export class TicketDetailModalComponent implements OnChanges {
   ticket = signal<TicketDetail | null>(null);
   loading = signal(false);
   timelineEntries = signal<TicketTimelineEntry[]>([]);
+  highlightedEntryId = signal<string | null>(null);
 
   headerTitle = computed(() => {
     const t = this.ticket();
@@ -107,21 +111,51 @@ export class TicketDetailModalComponent implements OnChanges {
   }
 
   onCommentAdded(ticket: TicketDetail): void {
+    console.log('onCommentAdded chamado com ticket:', ticket);
     this.ticket.set(ticket);
-    this.timelineEntries.set(this.buildTimeline(ticket));
+
+    const entries = this.buildTimeline(ticket);
+    console.log('Timeline entries construídas:', entries);
+    this.timelineEntries.set(entries);
     this.ticketUpdated.emit(ticket);
+
+    // Destacar o comentário mais recente
+    const latestComment = entries.find(entry => entry.type === 'comment');
+    console.log('Latest comment encontrado:', latestComment);
+
+    if (latestComment && latestComment.data) {
+      // Type guard para verificar se é TimelineCommentData
+      const isCommentData = (data: unknown): data is TimelineCommentData => {
+        return typeof data === 'object' && data !== null && 'id' in data;
+      };
+
+      if (isCommentData(latestComment.data)) {
+        console.log('ID do comentário para destacar:', latestComment.data.id);
+        this.highlightedEntryId.set(latestComment.data.id);
+
+        // Remover destaque após 3 segundos
+        setTimeout(() => {
+          this.highlightedEntryId.set(null);
+          this.cdr.markForCheck();
+        }, 3000);
+      }
+    }
+
+    this.cdr.markForCheck(); // Forçar detecção de mudanças
   }
 
   onTimeEntryAdded(ticket: TicketDetail): void {
     this.ticket.set(ticket);
     this.timelineEntries.set(this.buildTimeline(ticket));
     this.ticketUpdated.emit(ticket);
+    this.cdr.markForCheck(); // Forçar detecção de mudanças
   }
 
   onTicketUpdated(ticket: TicketDetail): void {
     this.ticket.set(ticket);
     this.timelineEntries.set(this.buildTimeline(ticket));
     this.ticketUpdated.emit(ticket);
+    this.cdr.markForCheck(); // Forçar detecção de mudanças
   }
 
   private loadTicket(id: string): void {
@@ -136,6 +170,17 @@ export class TicketDetailModalComponent implements OnChanges {
         this.loading.set(false);
       },
     });
+  }
+
+  isEntryHighlighted(entry: TicketTimelineEntry): boolean {
+    if (!entry.data) return false;
+
+    // Type guard para verificar se é TimelineCommentData
+    const isCommentData = (data: unknown): data is TimelineCommentData => {
+      return typeof data === 'object' && data !== null && 'id' in data;
+    };
+
+    return isCommentData(entry.data) ? entry.data.id === this.highlightedEntryId() : false;
   }
 
   private buildTimeline(ticket: TicketDetail): TicketTimelineEntry[] {
@@ -189,12 +234,14 @@ export class TicketDetailModalComponent implements OnChanges {
   }
 
   private commentToEntry(detail: TicketComment): TicketTimelineEntry {
-    // Extrair nome do usuário de forma segura
-    let userName = '';
-    if (typeof detail.user === 'string') {
-      userName = detail.user;
-    } else if (detail.user && typeof detail.user === 'object' && 'name' in detail.user) {
-      userName = (detail.user as { name: string }).name;
+    // Extrair nome do usuário - pode ser string ou objeto
+    let userName = 'Usuário';
+    if (detail.user) {
+      if (typeof detail.user === 'string') {
+        userName = detail.user;
+      } else if (typeof detail.user === 'object' && 'name' in detail.user) {
+        userName = (detail.user as { name: string }).name;
+      }
     }
 
     return {
