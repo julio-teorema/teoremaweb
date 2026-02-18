@@ -1,54 +1,27 @@
-.ticket-detail-dialog {
+:host ::ng-deep .ticket-detail-dialog {
 
   // Background danger para chamados urgentes
   &.urgent-modal {
-    .p-dialog {
-      background: linear-gradient(135deg,
-          rgba(239, 68, 68, 0.05) 0%,
-          rgba(239, 68, 68, 0.03) 50%,
-          rgba(239, 68, 68, 0.05) 100%);
+    --urgent-bg-strong: #fee2e2;
+    --urgent-bg-soft: #fff5f5;
+    --urgent-border: #fecaca;
+
+    background: var(--urgent-bg-soft);
+    border: 1px solid var(--urgent-border);
+    box-shadow: 0 8px 32px rgba(239, 68, 68, 0.25);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+
+    &>.p-dialog-header {
+      background: var(--urgent-bg-strong);
+      border-bottom: 1px solid var(--urgent-border);
     }
 
-    .p-dialog-header {
-      background: linear-gradient(135deg,
-          rgba(239, 68, 68, 0.08) 0%,
-          rgba(239, 68, 68, 0.05) 100%);
-      border-bottom: 1px solid rgba(239, 68, 68, 0.15);
-    }
-
-    .p-dialog-content {
-      background: linear-gradient(135deg,
-          rgba(239, 68, 68, 0.04) 0%,
-          rgba(239, 68, 68, 0.02) 100%);
-    }
-
-    // Aplicar ao corpo do modal também
-    .modal-body {
-      background: linear-gradient(135deg,
-          rgba(239, 68, 68, 0.04) 0%,
-          rgba(239, 68, 68, 0.02) 100%);
-    }
-
-    .col-left {
-      background: linear-gradient(135deg,
-          rgba(239, 68, 68, 0.03) 0%,
-          rgba(239, 68, 68, 0.01) 100%);
-    }
-
-    .col-center {
-      background: linear-gradient(135deg,
-          rgba(239, 68, 68, 0.03) 0%,
-          rgba(239, 68, 68, 0.01) 100%);
-    }
-
-    .col-right {
-      background: linear-gradient(135deg,
-          rgba(239, 68, 68, 0.03) 0%,
-          rgba(239, 68, 68, 0.01) 100%);
+    &>.p-dialog-content {
+      background: var(--urgent-bg-soft);
     }
   }
 
-  .p-dialog-content {
+  &>.p-dialog-content {
     padding: 0 !important;
     overflow: hidden !important;
     display: flex;
