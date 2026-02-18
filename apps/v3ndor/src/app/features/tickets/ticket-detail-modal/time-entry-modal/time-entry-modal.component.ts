@@ -63,7 +63,18 @@ export class TimeEntryModalComponent {
   private _activeTimeEntry: TicketLog | null = null;
   activeTab = signal<'new' | 'history'>('new');
 
-  @Input() initialTaskId: string | null = null;
+  private _initialTaskId: string | null = null;
+
+  @Input() set initialTaskId(value: string | null) {
+    this._initialTaskId = value;
+    if (value && this._visible && !this._activeTimeEntry) {
+      this.timeEntryTaskId.set(value);
+    }
+  }
+
+  get initialTaskId(): string | null {
+    return this._initialTaskId;
+  }
 
   @Input() set visible(value: boolean) {
     this._visible = value;
@@ -72,12 +83,12 @@ export class TimeEntryModalComponent {
       if (!this._activeTimeEntry) {
         this.timeEntryStatusId.set('00c18a5e-59da-11ed-b4ca-0242ac1b0002'); // UUID de "Em Produção"
       }
-      // Pré-selecionar tarefa se fornecida
-      if (this.initialTaskId && !this._activeTimeEntry) {
-        this.timeEntryTaskId.set(this.initialTaskId);
-      }
       // Atualizar aba baseado no apontamento ativo
       this.updateActiveTab();
+      // Pré-selecionar tarefa APÓS updateActiveTab (que pode chamar resetForm)
+      if (this._initialTaskId && !this._activeTimeEntry) {
+        this.timeEntryTaskId.set(this._initialTaskId);
+      }
     }
   }
 
