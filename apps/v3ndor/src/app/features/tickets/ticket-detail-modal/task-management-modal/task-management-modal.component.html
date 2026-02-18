@@ -137,6 +137,18 @@
             </div>
           </div>
 
+          <div class="col-12">
+            <div class="field-group">
+              <span class="field-label">
+                Desenvolvedor Responsável
+                <span class="required">*</span>
+              </span>
+              <p-select [options]="userOptions()" [(ngModel)]="formUserId" optionLabel="label"
+                optionValue="value" placeholder="Selecione o desenvolvedor" class="w-full" appendTo="body"
+                [style]="{ 'z-index': 1106 }" />
+            </div>
+          </div>
+
           <div class="col-6">
             <div class="field-group">
               <span class="field-label">Esforço Estimado (pontos)</span>
@@ -175,17 +187,6 @@
             </div>
           </div>
 
-          <div class="col-12">
-            <div class="field-group">
-              <span class="field-label">
-                Desenvolvedor Responsável
-                <span class="required">*</span>
-              </span>
-              <p-select [options]="userOptions()" [(ngModel)]="formUserId" optionLabel="label"
-                optionValue="value" placeholder="Selecione o desenvolvedor" class="w-full" appendTo="body"
-                [style]="{ 'z-index': 1106 }" />
-            </div>
-          </div>
         </div>
       </div>
     </div>

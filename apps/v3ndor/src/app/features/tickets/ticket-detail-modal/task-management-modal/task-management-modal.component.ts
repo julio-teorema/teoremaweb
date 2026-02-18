@@ -180,6 +180,8 @@ export class TaskManagementModalComponent implements OnInit {
     }
     if (this.ticket?.developer?.id) {
       this.formUserId.set(this.ticket.developer.id);
+    } else if (this.ticket?.responsible?.id) {
+      this.formUserId.set(this.ticket.responsible.id);
     }
     this.showForm.set(true);
   }
