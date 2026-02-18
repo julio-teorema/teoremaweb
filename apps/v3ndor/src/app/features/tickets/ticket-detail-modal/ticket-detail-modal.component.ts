@@ -31,6 +31,7 @@ import {
 import { TicketInfoPanelComponent } from './ticket-info-panel/ticket-info-panel.component';
 import { TicketTimelineComponent } from './ticket-timeline/ticket-timeline.component';
 import { TicketActionBarComponent } from './ticket-action-bar/ticket-action-bar.component';
+import { TaskManagementModalComponent } from './task-management-modal/task-management-modal.component';
 
 @Component({
   selector: 'app-ticket-detail-modal',
@@ -46,6 +47,7 @@ import { TicketActionBarComponent } from './ticket-action-bar/ticket-action-bar.
     TicketInfoPanelComponent,
     TicketTimelineComponent,
     TicketActionBarComponent,
+    TaskManagementModalComponent,
   ],
   templateUrl: './ticket-detail-modal.component.html',
   styleUrls: ['./ticket-detail-modal.component.scss'],
@@ -64,6 +66,7 @@ export class TicketDetailModalComponent implements OnChanges {
   loading = signal(false);
   timelineEntries = signal<TicketTimelineEntry[]>([]);
   highlightedEntryId = signal<string | null>(null);
+  showTaskModal = signal(false);
 
   headerTitle = computed(() => {
     const t = this.ticket();
@@ -326,5 +329,24 @@ export class TicketDetailModalComponent implements OnChanges {
     const baseClass = 'ticket-detail-dialog';
     const urgentClass = this.ticket()?.urgent ? 'urgent-modal' : '';
     return [baseClass, urgentClass].filter(Boolean).join(' ');
+  }
+
+  openTaskModal(): void {
+    this.showTaskModal.set(true);
+  }
+
+  onTaskModalTicketUpdated(updatedTicket: TicketDetail): void {
+    this.ticket.set(updatedTicket);
+    this.timelineEntries.set(this.buildTimeline(updatedTicket));
+    this.ticketUpdated.emit(updatedTicket);
+    this.cdr.markForCheck();
+  }
+
+  onTaskStartTimeEntry(_taskId: string): void {
+    this.showTaskModal.set(false);
+    const actionBar = document.querySelector('app-ticket-action-bar');
+    if (actionBar) {
+      (actionBar as unknown as { openTimeEntryModal: () => void }).openTimeEntryModal();
+    }
   }
 }

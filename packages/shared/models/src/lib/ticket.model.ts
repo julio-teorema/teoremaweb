@@ -84,6 +84,7 @@ export interface TicketTask {
   status: TicketStatus | null;
   user: TicketUser | null;
   created_at: string;
+  systems?: Array<{ id?: string; description?: string }> | null;
 }
 
 export interface TicketDocument {

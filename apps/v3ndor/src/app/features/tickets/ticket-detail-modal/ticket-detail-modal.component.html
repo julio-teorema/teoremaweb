@@ -126,7 +126,18 @@
 
     <!-- Action bar ocupa centro + direita -->
     <app-ticket-action-bar class="action-bar-span" [ticket]="t" (commentAdded)="onCommentAdded($event)"
-      (timeEntryAdded)="onTimeEntryAdded($event)" />
+      (timeEntryAdded)="onTimeEntryAdded($event)">
+      <button class="tasks-button" (click)="openTaskModal()">
+        <i class="pi pi-check-square"></i>
+        Tarefas ({{ t.tasks.length }})
+      </button>
+    </app-ticket-action-bar>
   </div>
+
+  <!-- Task Management Modal -->
+  @if (ticket(); as currentTicket) {
+  <app-task-management-modal [ticket]="currentTicket" [(visible)]="showTaskModal"
+    (ticketUpdated)="onTaskModalTicketUpdated($event)" (startTimeEntry)="onTaskStartTimeEntry($event)" />
+  }
   }
 </p-dialog>
