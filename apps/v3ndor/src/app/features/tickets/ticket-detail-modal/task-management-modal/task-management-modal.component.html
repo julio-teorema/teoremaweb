@@ -11,7 +11,7 @@
     <!-- Task List View -->
     <div class="task-list-view">
       <div class="task-list-header">
-        <span class="task-count">{{ tasks().length }} tarefa(s)</span>
+        <span class="task-count">{{ tasks().length }} tarefa(s) · {{ totalPoints() }} ponto(s)</span>
         <p-button icon="pi pi-plus" label="Nova Tarefa" size="small" (onClick)="openNewTaskForm()" />
       </div>
 

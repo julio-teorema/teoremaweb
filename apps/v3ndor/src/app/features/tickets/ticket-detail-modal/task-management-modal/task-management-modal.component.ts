@@ -136,6 +136,10 @@ export class TaskManagementModalComponent implements OnInit {
     return users;
   });
 
+  totalPoints = computed(() => {
+    return this.tasks().reduce((sum, t) => sum + (t.estimated_effort ?? 0), 0);
+  });
+
   formTitle = computed(() => {
     return this.editingTask() ? 'Editar Tarefa' : 'Nova Tarefa';
   });
