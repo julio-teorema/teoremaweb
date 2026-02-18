@@ -111,11 +111,13 @@
                 }
               </div>
               <div class="task-item-meta">
-                @if (task.systems?.length) {
-                <span class="task-meta-tag">
-                  <i class="pi pi-box"></i>
-                  {{ task.systems[0].description }}
-                </span>
+                @if (task.systems?.length; as hasSystems) {
+                  @if (task.systems![0]; as firstSystem) {
+                  <span class="task-meta-tag">
+                    <i class="pi pi-box"></i>
+                    {{ firstSystem.description }}
+                  </span>
+                  }
                 }
                 @if (task.user; as taskUser) {
                 <span class="task-meta-tag">
