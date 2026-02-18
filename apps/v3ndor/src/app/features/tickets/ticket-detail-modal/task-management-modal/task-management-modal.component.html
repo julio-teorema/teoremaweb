@@ -178,7 +178,10 @@
           @if (userOptions().length > 0) {
           <div class="col-12">
             <div class="field-group">
-              <span class="field-label">Desenvolvedor Responsável</span>
+              <span class="field-label">
+                Desenvolvedor Responsável
+                <span class="required">*</span>
+              </span>
               <p-select [options]="userOptions()" [(ngModel)]="formUserId" optionLabel="label"
                 optionValue="value" placeholder="Selecione o desenvolvedor" class="w-full" appendTo="body"
                 [style]="{ 'z-index': 1106 }" />
@@ -196,7 +199,7 @@
       @if (showForm()) {
       <p-button label="Cancelar" icon="pi pi-times" severity="secondary" (onClick)="closeForm()" />
       <p-button label="Salvar" icon="pi pi-check" severity="success" [loading]="saving()"
-        [disabled]="!formSummary().trim() || !formDescription().trim() || !formStatusId()" (onClick)="saveTask()" />
+        [disabled]="!formSummary().trim() || !formDescription().trim() || !formStatusId() || !formUserId()" (onClick)="saveTask()" />
       } @else {
       <p-button label="Fechar" icon="pi pi-times" severity="secondary" (onClick)="onHide()" />
       }

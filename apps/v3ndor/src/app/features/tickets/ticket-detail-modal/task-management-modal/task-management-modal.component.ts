@@ -89,7 +89,7 @@ export class TaskManagementModalComponent implements OnInit {
   formDescription = signal('');
   formEstimatedEffort = signal<number | null>(null);
   formExpectedDate = signal<Date | null>(null);
-  formDifficulty = signal('fácil');
+  formDifficulty = signal('médio');
   formStatusId = signal<string | null>(null);
   formUserId = signal<string | null>(null);
 
@@ -157,6 +157,9 @@ export class TaskManagementModalComponent implements OnInit {
     if (this.ticket?.status?.id) {
       this.formStatusId.set(this.ticket.status.id);
     }
+    if (this.ticket?.developer?.id) {
+      this.formUserId.set(this.ticket.developer.id);
+    }
     this.showForm.set(true);
   }
 
@@ -166,7 +169,7 @@ export class TaskManagementModalComponent implements OnInit {
     this.formDescription.set(task.description || '');
     this.formEstimatedEffort.set(task.estimated_effort);
     this.formExpectedDate.set(task.expected_date ? new Date(task.expected_date) : null);
-    this.formDifficulty.set(task.difficulty || 'fácil');
+    this.formDifficulty.set(task.difficulty || 'médio');
     this.formStatusId.set(task.status?.id || null);
     this.formUserId.set(task.user?.id || null);
     this.showForm.set(true);
@@ -183,7 +186,7 @@ export class TaskManagementModalComponent implements OnInit {
     this.formDescription.set('');
     this.formEstimatedEffort.set(null);
     this.formExpectedDate.set(null);
-    this.formDifficulty.set('fácil');
+    this.formDifficulty.set('médio');
     this.formStatusId.set(null);
     this.formUserId.set(null);
   }
@@ -193,11 +196,14 @@ export class TaskManagementModalComponent implements OnInit {
     const description = this.formDescription().trim();
     const statusId = this.formStatusId();
 
-    if (!summary || !description || !statusId) {
+    const userId = this.formUserId();
+
+    if (!summary || !description || !statusId || !userId) {
       const missing: string[] = [];
       if (!summary) missing.push('descrição resumida');
       if (!description) missing.push('descrição completa');
       if (!statusId) missing.push('status');
+      if (!userId) missing.push('desenvolvedor');
       this.messageService.add({
         severity: 'warn',
         summary: 'Atenção',
@@ -218,10 +224,7 @@ export class TaskManagementModalComponent implements OnInit {
       status: { id: statusId, description: '' },
     };
 
-    const userId = this.formUserId();
-    if (userId) {
-      payload.user = { id: userId, name: '' };
-    }
+    payload.user = { id: userId, name: '' };
 
     const editing = this.editingTask();
     if (editing) {
