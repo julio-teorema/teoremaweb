@@ -108,11 +108,32 @@ export class TaskManagementModalComponent implements OnInit {
   ];
 
   userOptions = computed(() => {
-    if (!this.ticket?.participants) return [];
-    return this.ticket.participants.map(u => ({
-      label: u.name,
-      value: u.id,
-    }));
+    const users: Array<{ label: string; value: string }> = [];
+    const seen = new Set<string>();
+
+    if (this.ticket?.participants) {
+      for (const u of this.ticket.participants) {
+        if (!seen.has(u.id)) {
+          seen.add(u.id);
+          users.push({ label: u.name, value: u.id });
+        }
+      }
+    }
+
+    if (this.ticket?.ticketUsers) {
+      for (const tu of this.ticket.ticketUsers) {
+        if (tu.user && !seen.has(tu.user.id)) {
+          seen.add(tu.user.id);
+          users.push({ label: tu.user.name, value: tu.user.id });
+        }
+      }
+    }
+
+    if (this.ticket?.developer && !seen.has(this.ticket.developer.id)) {
+      users.push({ label: this.ticket.developer.name, value: this.ticket.developer.id });
+    }
+
+    return users;
   });
 
   formTitle = computed(() => {
