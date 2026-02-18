@@ -63,6 +63,19 @@ export class TimeEntryModalComponent {
   private _activeTimeEntry: TicketLog | null = null;
   activeTab = signal<'new' | 'history'>('new');
 
+  private _initialTaskId: string | null = null;
+
+  @Input() set initialTaskId(value: string | null) {
+    this._initialTaskId = value;
+    if (value && this._visible && !this._activeTimeEntry) {
+      this.timeEntryTaskId.set(value);
+    }
+  }
+
+  get initialTaskId(): string | null {
+    return this._initialTaskId;
+  }
+
   @Input() set visible(value: boolean) {
     this._visible = value;
     if (value) {
@@ -72,6 +85,10 @@ export class TimeEntryModalComponent {
       }
       // Atualizar aba baseado no apontamento ativo
       this.updateActiveTab();
+      // Pré-selecionar tarefa APÓS updateActiveTab (que pode chamar resetForm)
+      if (this._initialTaskId && !this._activeTimeEntry) {
+        this.timeEntryTaskId.set(this._initialTaskId);
+      }
     }
   }
 

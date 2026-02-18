@@ -1,7 +1,7 @@
 import { Injectable, inject, InjectionToken } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { TicketFilterParams, TicketMassiveResponse, TicketDetail, TaskProgressResponse, TimeEntry } from '@org/shared/models';
+import { TicketFilterParams, TicketMassiveResponse, TicketDetail, TaskProgressResponse, TimeEntry, TicketTask } from '@org/shared/models';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -97,6 +97,31 @@ export class TicketService {
 
   getActiveTimeEntry(ticketId: string, userId: string): Observable<TimeEntry | null> {
     return this.http.get<{ success: boolean; data: TimeEntry | null; message: string }>(`${this.baseUrl}/tickets/${ticketId}/timeentry/active?user_id=${userId}`)
+      .pipe(
+        map(response => response.data)
+      );
+  }
+
+  createTask(ticketId: string, payload: Partial<TicketTask>): Observable<TicketDetail> {
+    return this.http.post<{ success: boolean; data: TicketDetail; message: string }>(`${this.baseUrl}/tickets/${ticketId}/tasks`, payload)
+      .pipe(
+        map(response => response.data)
+      );
+  }
+
+  updateTask(taskId: string, fields: Partial<TicketTask>): Observable<TicketDetail> {
+    return this.http.patch<{ success: boolean; data: TicketDetail; message: string }>(`${this.baseUrl}/tasks/${taskId}`, fields)
+      .pipe(
+        map(response => response.data)
+      );
+  }
+
+  deleteTask(taskId: string): Observable<{ success: boolean; message: string }> {
+    return this.http.delete<{ success: boolean; message: string }>(`${this.baseUrl}/tasks/${taskId}`);
+  }
+
+  reorderTasks(ticketId: string, taskIds: string[]): Observable<TicketDetail> {
+    return this.http.patch<{ success: boolean; data: TicketDetail; message: string }>(`${this.baseUrl}/tickets/${ticketId}/tasks/reorder`, { taskIds })
       .pipe(
         map(response => response.data)
       );

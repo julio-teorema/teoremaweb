@@ -8,6 +8,7 @@
       (onClick)="setAction('attachment')" />
     <p-button icon="pi pi-clock" [label]="getApontamentoButtonLabel()" [severity]="getApontamentoButtonSeverity()"
       variant="outlined" size="small" (onClick)="openTimeEntryModal()" />
+    <ng-content></ng-content>
   </div>
 
   <div class="action-input">
@@ -41,5 +42,5 @@
 
 <!-- Time Entry Modal -->
 <app-time-entry-modal [ticket]="ticket" [(visible)]="showTimeEntryModal" [ticketTimeEntries]="getTimeEntries()"
-  [activeTimeEntry]="activeTimeEntry()" (timeEntryAdded)="onTimeEntryModalSaved($event)"
+  [activeTimeEntry]="activeTimeEntry()" [initialTaskId]="preSelectedTaskId()" (timeEntryAdded)="onTimeEntryModalSaved($event)"
   (timeEntryStopped)="onStopTimeEntry()" />

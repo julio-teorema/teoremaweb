@@ -1,0 +1,207 @@
+<p-dialog header="Gerenciar Tarefas - #{{ ticket.ticket_number_teorema }}" [(visible)]="visible" [modal]="true"
+  [draggable]="false" [resizable]="false"
+  [style]="{ width: '90vw', 'max-width': '850px', height: '90vh', 'max-height': '90vh', 'z-index': 1100 }"
+  [breakpoints]="{ '768px': '95vw', '480px': '100vw' }" (onHide)="onHide()" styleClass="task-management-modal"
+  [contentStyle]="{ padding: '0', height: 'calc(90vh - 130px)', 'overflow': 'auto' }">
+
+  <p-confirmDialog [style]="{ 'z-index': 1200 }" />
+
+  <div class="modal-content-wrapper">
+    @if (!showForm()) {
+    <!-- Task List View -->
+    <div class="task-list-view">
+      <div class="task-list-header">
+        <span class="task-count">{{ tasks().length }} tarefa(s) · {{ totalPoints() }} ponto(s)</span>
+        <p-button icon="pi pi-plus" label="Nova Tarefa" size="small" (onClick)="openNewTaskForm()" />
+      </div>
+
+      @if (tasks().length === 0) {
+      <div class="empty-state">
+        <i class="pi pi-check-square"></i>
+        <p>Nenhuma tarefa cadastrada</p>
+        <p-button icon="pi pi-plus" label="Criar Primeira Tarefa" size="small" (onClick)="openNewTaskForm()" />
+      </div>
+      } @else {
+      <div class="task-items">
+        @for (task of tasks(); track task.id; let i = $index) {
+        <div class="task-card" [class.task-finished]="task.finished" [class.dragging]="draggedIndex() === i"
+          draggable="true" (dragstart)="onDragStart(i)" (dragover)="onDragOver($event)" (drop)="onDrop(i)"
+          (dragend)="onDragEnd()">
+          <div class="task-drag-handle">
+            <i class="pi pi-bars"></i>
+          </div>
+
+          <div class="task-checkbox">
+            <p-checkbox [(ngModel)]="task.finished" [binary]="true" (onChange)="toggleTaskFinished(task)" />
+          </div>
+
+          <div class="task-content">
+            <div class="task-main-row">
+              <span class="task-summary" [class.task-done-text]="task.finished">
+                {{ task.summary || task.description }}
+              </span>
+              <span class="task-difficulty" [ngClass]="getDifficultyClass(task.difficulty)">
+                {{ getDifficultyLabel(task.difficulty) }}
+              </span>
+            </div>
+
+            @if (task.description && task.description !== task.summary) {
+            <div class="task-description-row">
+              {{ task.description }}
+            </div>
+            }
+
+            <div class="task-meta-row">
+              @if (task.user; as taskUser) {
+              <span class="task-user">
+                <i class="pi pi-user"></i>
+                {{ taskUser.name }}
+              </span>
+              }
+              @if (task.expected_date) {
+              <span class="task-date">
+                <i class="pi pi-calendar"></i>
+                {{ formatDate(task.expected_date) }}
+              </span>
+              }
+              @if (task.estimated_effort) {
+              <span class="task-effort">
+                <i class="pi pi-bolt"></i>
+                {{ task.estimated_effort }} pt(s)
+              </span>
+              }
+            </div>
+
+            <div class="task-progress-row">
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" [style.width.%]="task.progress"
+                  [style.background-color]="getProgressColor(task.progress)">
+                </div>
+              </div>
+              <span class="progress-label">{{ task.progress | number:'1.0-0' }}%</span>
+            </div>
+          </div>
+
+          <div class="task-actions">
+            <button class="task-action-btn" pTooltip="Iniciar Apontamento" tooltipPosition="top"
+              (click)="onStartTimeEntry(task.id)">
+              <i class="pi pi-play"></i>
+            </button>
+            <button class="task-action-btn" pTooltip="Editar" tooltipPosition="top"
+              (click)="openEditTaskForm(task)">
+              <i class="pi pi-pencil"></i>
+            </button>
+            <button class="task-action-btn btn-danger" pTooltip="Excluir" tooltipPosition="top"
+              (click)="confirmDeleteTask(task)">
+              <i class="pi pi-trash"></i>
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    } @else {
+    <!-- Task Form View -->
+    <div class="task-form-view">
+      <div class="form-header">
+        <button class="back-button" (click)="closeForm()">
+          <i class="pi pi-arrow-left"></i>
+          Voltar
+        </button>
+        <h3>{{ formTitle() }}</h3>
+      </div>
+
+      <div class="task-form">
+        <div class="form-grid">
+          <div class="col-12">
+            <div class="field-group">
+              <span class="field-label">
+                Descrição Resumida
+                <span class="required">*</span>
+              </span>
+              <input pInputText [ngModel]="formSummary()" (ngModelChange)="formSummary.set($event)"
+                placeholder="Resumo da tarefa" class="w-full" />
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="field-group">
+              <span class="field-label">
+                Descrição Completa
+                <span class="required">*</span>
+              </span>
+              <textarea pTextarea [autoResize]="true" [rows]="4" [ngModel]="formDescription()"
+                (ngModelChange)="formDescription.set($event)" placeholder="Detalhes da tarefa..."
+                class="w-full"></textarea>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="field-group">
+              <span class="field-label">
+                Desenvolvedor Responsável
+                <span class="required">*</span>
+              </span>
+              <p-select [options]="userOptions()" [(ngModel)]="formUserId" optionLabel="label"
+                optionValue="value" placeholder="Selecione o desenvolvedor" class="w-full" appendTo="body"
+                [style]="{ 'z-index': 1106 }" />
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="field-group">
+              <span class="field-label">Esforço Estimado (pontos)</span>
+              <input pInputText type="number" [ngModel]="formEstimatedEffort()"
+                (ngModelChange)="formEstimatedEffort.set($event)" placeholder="1 ponto = 4 horas"
+                class="w-full" />
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="field-group">
+              <span class="field-label">Data de Previsão</span>
+              <p-datepicker [(ngModel)]="formExpectedDate" placeholder="Selecione a data" class="w-full"
+                appendTo="body" [style]="{ 'z-index': 1103 }" />
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="field-group">
+              <span class="field-label">Dificuldade</span>
+              <p-select [options]="difficultyOptions" [(ngModel)]="formDifficulty" optionLabel="label"
+                optionValue="value" placeholder="Selecione" class="w-full" appendTo="body"
+                [style]="{ 'z-index': 1104 }" />
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="field-group">
+              <span class="field-label">
+                Status
+                <span class="required">*</span>
+              </span>
+              <p-select [options]="statusOptions" [(ngModel)]="formStatusId" optionLabel="label"
+                optionValue="value" placeholder="Selecione o status" class="w-full" appendTo="body"
+                [style]="{ 'z-index': 1105 }" />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="form-actions">
+      @if (showForm()) {
+      <p-button label="Cancelar" icon="pi pi-times" severity="secondary" (onClick)="closeForm()" />
+      <p-button label="Salvar" icon="pi pi-check" severity="success" [loading]="saving()"
+        [disabled]="!formSummary().trim() || !formDescription().trim() || !formStatusId() || !formUserId()" (onClick)="saveTask()" />
+      } @else {
+      <p-button label="Fechar" icon="pi pi-times" severity="secondary" (onClick)="onHide()" />
+      }
+    </div>
+  </ng-template>
+</p-dialog>

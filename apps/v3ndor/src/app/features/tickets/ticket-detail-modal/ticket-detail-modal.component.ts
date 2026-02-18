@@ -10,6 +10,7 @@ import {
   OnChanges,
   SimpleChanges,
   ChangeDetectorRef,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,6 +19,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ProgressBarModule } from 'primeng/progressbar';
 import { TicketService } from '@org/shared/services';
 import {
   TicketDetail,
@@ -27,10 +29,12 @@ import {
   TicketTask,
   TicketDocument,
   TicketLog,
+  TaskProgressResponse,
 } from '@org/shared/models';
 import { TicketInfoPanelComponent } from './ticket-info-panel/ticket-info-panel.component';
 import { TicketTimelineComponent } from './ticket-timeline/ticket-timeline.component';
 import { TicketActionBarComponent } from './ticket-action-bar/ticket-action-bar.component';
+import { TaskManagementModalComponent } from './task-management-modal/task-management-modal.component';
 
 @Component({
   selector: 'app-ticket-detail-modal',
@@ -43,9 +47,11 @@ import { TicketActionBarComponent } from './ticket-action-bar/ticket-action-bar.
     TagModule,
     ButtonModule,
     CheckboxModule,
+    ProgressBarModule,
     TicketInfoPanelComponent,
     TicketTimelineComponent,
     TicketActionBarComponent,
+    TaskManagementModalComponent,
   ],
   templateUrl: './ticket-detail-modal.component.html',
   styleUrls: ['./ticket-detail-modal.component.scss'],
@@ -54,6 +60,8 @@ import { TicketActionBarComponent } from './ticket-action-bar/ticket-action-bar.
 export class TicketDetailModalComponent implements OnChanges {
   private readonly ticketService = inject(TicketService);
   private readonly cdr = inject(ChangeDetectorRef);
+
+  @ViewChild(TicketActionBarComponent) actionBarRef?: TicketActionBarComponent;
 
   @Input() ticketId: string | null = null;
   @Input() visible = false;
@@ -64,6 +72,8 @@ export class TicketDetailModalComponent implements OnChanges {
   loading = signal(false);
   timelineEntries = signal<TicketTimelineEntry[]>([]);
   highlightedEntryId = signal<string | null>(null);
+  showTaskModal = signal(false);
+  taskProgressMap = signal<Map<string, number>>(new Map());
 
   headerTitle = computed(() => {
     const t = this.ticket();
@@ -163,11 +173,43 @@ export class TicketDetailModalComponent implements OnChanges {
         this.ticket.set(data);
         this.timelineEntries.set(this.buildTimeline(data));
         this.loading.set(false);
+        this.loadTaskProgress(data);
       },
       error: () => {
         this.loading.set(false);
       },
     });
+  }
+
+  private loadTaskProgress(ticket: TicketDetail): void {
+    if (!ticket.tasks?.length) {
+      this.taskProgressMap.set(new Map());
+      return;
+    }
+    this.ticketService.getTasksProgress(ticket.id).subscribe({
+      next: (progressData: TaskProgressResponse[]) => {
+        const map = new Map<string, number>();
+        ticket.tasks.forEach((task, index) => {
+          map.set(task.id, progressData[index]?.percentage ?? 0);
+        });
+        this.taskProgressMap.set(map);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.taskProgressMap.set(new Map());
+      },
+    });
+  }
+
+  getTaskProgress(taskId: string): number {
+    return this.taskProgressMap().get(taskId) ?? 0;
+  }
+
+  getProgressColor(percentage: number): string {
+    if (percentage >= 100) return '#10b981';
+    if (percentage >= 50) return '#3b82f6';
+    if (percentage > 0) return '#f59e0b';
+    return '#94a3b8';
   }
 
   isEntryHighlighted(entry: TicketTimelineEntry): boolean {
@@ -326,5 +368,40 @@ export class TicketDetailModalComponent implements OnChanges {
     const baseClass = 'ticket-detail-dialog';
     const urgentClass = this.ticket()?.urgent ? 'urgent-modal' : '';
     return [baseClass, urgentClass].filter(Boolean).join(' ');
+  }
+
+  getSortedTasks(): TicketTask[] {
+    const t = this.ticket();
+    if (!t?.tasks) return [];
+    return [...t.tasks].sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
+  }
+
+  getTotalTaskPoints(): number {
+    const t = this.ticket();
+    if (!t?.tasks) return 0;
+    return t.tasks.reduce((sum, task) => sum + (task.estimated_effort ?? 0), 0);
+  }
+
+  openTaskModal(): void {
+    this.showTaskModal.set(true);
+  }
+
+  startTimeEntryForTask(taskId: string): void {
+    this.onTaskStartTimeEntry(taskId);
+  }
+
+  onTaskModalTicketUpdated(updatedTicket: TicketDetail): void {
+    this.ticket.set(updatedTicket);
+    this.timelineEntries.set(this.buildTimeline(updatedTicket));
+    this.ticketUpdated.emit(updatedTicket);
+    this.loadTaskProgress(updatedTicket);
+    this.cdr.markForCheck();
+  }
+
+  onTaskStartTimeEntry(taskId: string): void {
+    this.showTaskModal.set(false);
+    if (this.actionBarRef) {
+      this.actionBarRef.openTimeEntryModal(taskId);
+    }
   }
 }
