@@ -95,6 +95,19 @@ export class TicketService {
     );
   }
 
+  uploadDocument(ticketNumber: string, file: File): Observable<TicketDetail> {
+    const formData = new FormData();
+    formData.append('path', `tickets/${ticketNumber}`);
+    formData.append('file', file, file.name);
+
+    return this.http.post<{ success: boolean; data: TicketDetail; message: string }>(
+      `https://api-php.teorema.inf.br/v2/api/teorema/assets`,
+      formData
+    ).pipe(
+      map(response => response.data)
+    );
+  }
+
   getActiveTimeEntry(ticketId: string, userId: string): Observable<TimeEntry | null> {
     return this.http.get<{ success: boolean; data: TimeEntry | null; message: string }>(`${this.baseUrl}/tickets/${ticketId}/timeentry/active?user_id=${userId}`)
       .pipe(

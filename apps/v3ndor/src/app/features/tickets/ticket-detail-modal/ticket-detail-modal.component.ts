@@ -146,7 +146,14 @@ export class TicketDetailModalComponent implements OnChanges {
     this.ticket.set(ticket);
     this.timelineEntries.set(this.buildTimeline(ticket));
     this.ticketUpdated.emit(ticket);
-    this.cdr.markForCheck(); // Forçar detecção de mudanças
+    this.cdr.markForCheck();
+  }
+
+  onAttachmentAdded(ticket: TicketDetail): void {
+    this.ticket.set(ticket);
+    this.timelineEntries.set(this.buildTimeline(ticket));
+    this.ticketUpdated.emit(ticket);
+    this.cdr.markForCheck();
   }
 
   onTicketUpdated(ticket: TicketDetail): void {
