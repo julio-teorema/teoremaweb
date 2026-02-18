@@ -36,7 +36,7 @@
 }
 
 // Badge Urgente para listagem
-::ng-deep .urgent-badge {
+.urgent-badge {
   background: var(--p-red-500, #ef4444);
   color: #fff;
   font-size: 0.65rem;
@@ -51,8 +51,8 @@
 }
 
 // Dark mode para badge urgente
-:host-context(.dark) ::ng-deep .urgent-badge,
-:root.dark ::ng-deep .urgent-badge {
+:host-context(.dark) .urgent-badge,
+:root.dark .urgent-badge {
   background: var(--p-red-500);
   color: #fff;
 }

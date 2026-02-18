@@ -11,29 +11,45 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        surface: 'var(--v-bg-card)',
+        elevated: 'var(--v-bg-elevated)',
+        soft: 'var(--v-bg-soft)',
+        text: {
+          DEFAULT: 'var(--v-text-primary)',
+          primary: 'var(--v-text-primary)',
+          secondary: 'var(--v-text-secondary)',
+          muted: 'var(--v-text-muted)',
+        },
+        border: {
+          DEFAULT: 'var(--v-border)',
+          strong: 'var(--v-border-strong)',
+        },
+        state: {
+          success: 'var(--state-success)',
+          'success-soft': 'var(--state-success-soft)',
+          warning: 'var(--state-warning)',
+          'warning-soft': 'var(--state-warning-soft)',
+          danger: 'var(--state-danger)',
+          'danger-soft': 'var(--state-danger-soft)',
+          info: 'var(--state-info)',
+          'info-soft': 'var(--state-info-soft)',
+        },
         primary: {
-          green: '#7ED321',
-          blue: '#1B75BC',
-          dark: '#0A2540',
+          green: 'var(--color-primary-green)',
+          blue: 'var(--color-primary-blue)',
+          dark: 'var(--color-primary-dark)',
         },
         secondary: {
-          'green-light': '#E8F5E9',
-          'blue-light': '#E3F2FD',
-        },
-        background: {
-          light: {
-            primary: '#FFFFFF',
-            secondary: '#F5F5F5',
-          },
-          dark: {
-            primary: '#121212',
-            secondary: '#1E1E1E',
-            elevated: '#2A2A2A',
-          },
+          'green-light': 'var(--color-secondary-green-light)',
+          'blue-light': 'var(--color-secondary-blue-light)',
         },
       },
       fontFamily: {
         sans: ['Inter', 'Roboto', 'sans-serif'],
+      },
+      boxShadow: {
+        card: 'var(--v-shadow-card)',
+        popover: 'var(--v-shadow-popover)',
       },
       spacing: {
         '1': '4px',

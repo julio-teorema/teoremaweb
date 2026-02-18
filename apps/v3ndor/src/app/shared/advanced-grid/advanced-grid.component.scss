@@ -5,7 +5,7 @@
   min-height: 0;
 }
 
-::ng-deep .p-datatable {
+.advanced-grid-table {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -15,7 +15,7 @@
   overflow: hidden;
 }
 
-::ng-deep .p-datatable.has-toolbar {
+.advanced-grid-table.has-toolbar {
   border-radius: 0 0 0.75rem 0.75rem;
   border-top: none;
 }
@@ -88,14 +88,14 @@
   white-space: nowrap;
 }
 
-::ng-deep mark {
-  background: #fef08a;
+.advanced-grid-table mark {
+  background: color-mix(in srgb, var(--state-warning) 30%, transparent);
   color: inherit;
   padding: 0.05em 0.15em;
   border-radius: 2px;
 }
 
-::ng-deep tr.group-header-row {
+.advanced-grid-table tr.group-header-row {
   background: var(--v-bg-elevated) !important;
 
   td {
@@ -185,45 +185,21 @@
 }
 
 // Estilos para linhas urgentes
-::ng-deep .urgent-row {
-  background-color: var(--p-red-50, rgba(239, 68, 68, 0.05)) !important;
-  border-left: 3px solid var(--p-red-500, #ef4444) !important;
-
-  // Hover effect
-  &:hover {
-    background-color: var(--p-red-100, rgba(239, 68, 68, 0.1)) !important;
-  }
-}
-
-// Dark mode para linhas urgentes
-:host-context(.dark) ::ng-deep .urgent-row,
-:root.dark ::ng-deep .urgent-row {
-  background-color: rgba(239, 68, 68, 0.1) !important;
-  border-left-color: var(--p-red-500) !important;
+.advanced-grid-table .urgent-row {
+  background-color: var(--state-danger-soft) !important;
+  border-left: 3px solid var(--state-danger) !important;
 
   &:hover {
-    background-color: rgba(239, 68, 68, 0.15) !important;
+    background-color: color-mix(in srgb, var(--state-danger) 20%, transparent) !important;
   }
 }
 
 // Estilos para cards urgentes no mobile
 .urgent-card {
-  background-color: var(--p-red-50, rgba(239, 68, 68, 0.05)) !important;
-  border-left: 3px solid var(--p-red-500, #ef4444) !important;
-
-  // Hover effect
-  &:hover {
-    background-color: var(--p-red-100, rgba(239, 68, 68, 0.1)) !important;
-  }
-}
-
-// Dark mode para cards urgentes
-:host-context(.dark) .urgent-card,
-:root.dark .urgent-card {
-  background-color: rgba(239, 68, 68, 0.1) !important;
-  border-left-color: var(--p-red-500) !important;
+  background-color: var(--state-danger-soft) !important;
+  border-left: 3px solid var(--state-danger) !important;
 
   &:hover {
-    background-color: rgba(239, 68, 68, 0.15) !important;
+    background-color: color-mix(in srgb, var(--state-danger) 20%, transparent) !important;
   }
 }

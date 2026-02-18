@@ -29,7 +29,7 @@
 <!-- Grouped table (manual grouping) -->
 <p-table #dt [value]="groupedData()" [columns]="visibleColumns()" [loading]="loading" [scrollable]="true"
   scrollHeight="flex" [tableStyle]="{ 'min-width': '60rem' }" [exportFilename]="title || 'export'"
-  styleClass="p-datatable-sm has-toolbar">
+  styleClass="p-datatable-sm has-toolbar advanced-grid-table">
 
   <ng-template pTemplate="header" let-columns>
     <tr>
@@ -83,7 +83,7 @@
   [showGridlines]="config.showGridlines || false" [stripedRows]="config.stripedRows || false"
   [tableStyle]="{ 'min-width': '60rem' }" (onRowSelect)="rowSelect.emit($any($event).data)"
   (onRowDblClick)="rowDblClick.emit($any($event).data)" (onColReorder)="onColReorder($event)"
-  [exportFilename]="title || 'export'" styleClass="p-datatable-sm has-toolbar">
+  [exportFilename]="title || 'export'" styleClass="p-datatable-sm has-toolbar advanced-grid-table">
 
   <ng-template pTemplate="header" let-columns>
     <tr>

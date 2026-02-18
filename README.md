@@ -104,3 +104,41 @@ And join the Nx community:
 - [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
 - [Our Youtube channel](https://www.youtube.com/@nxdevtools)
 - [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+
+## Guia de tema unificado (PrimeNG + PrimeFlex + Tailwind)
+
+Este projeto utiliza um conjunto único de tokens e utilitários para garantir consistência entre os modos claro/escuro e entre as bibliotecas PrimeNG, PrimeFlex e Tailwind.
+
+### Tokens globais
+
+- **Arquivo fonte:** `apps/v3ndor/src/styles.css` (seção `:root` / `.dark`).
+- Use sempre as variáveis CSS `var(--v-*)` para superfícies e textos, e `var(--state-*)` para estados (sucesso, alerta, erro, informação).
+- Tailwind está configurado para ler essas variáveis (`apps/v3ndor/tailwind.config.js`), então utilitários Tailwind refletem automaticamente a mudança de tema.
+
+### Overrides do PrimeNG
+
+- **Arquivo:** `apps/v3ndor/src/app/theme/primeng-overrides.css`.
+- Todas as customizações de componentes PrimeNG devem ir para esse arquivo usando as variáveis globais.
+- Evite `::ng-deep`: se precisar alterar um componente específico, adicione `styleClass` no template (ex.: `styleClass="action-button"`) e estilize via SCSS local.
+
+### Utilitários e convenções
+
+- `.v-urgent-badge`: badge pronta para estados críticos.
+- `.advanced-grid-table`: aplicado nos `<p-table>` do grid compartilhado para estilização consistente.
+- `.action-button`: usado nos botões de ações do modal para manter padding/tipografia iguais.
+- Para PrimeNG, prefira `styleClass`/`appendTo="body"` em vez de injetar CSS global.
+
+### Passos para novos componentes
+
+1. **Defina superfícies e textos** usando `var(--v-bg-card)`, `var(--v-text-primary)`, etc.
+2. **Estados** (sucesso/erro/alerta) vêm de `var(--state-success)` e variações `-soft` para fundos.
+3. **PrimeNG:** atribua `styleClass` e adicione classes no SCSS local; só altere `primeng-overrides.css` para regras realmente globais.
+4. **Tailwind:** use utilitários normalmente — eles já apontam para as variáveis globais.
+5. **Sem `::ng-deep`:** se identificar algum legado, substitua por classes locais ou pelos overrides globais.
+
+### Checklist rápido antes de abrir PR
+
+- [ ] Nenhuma cor hardcoded (usar tokens).
+- [ ] Sem `::ng-deep` ou `prefers-color-scheme` locais.
+- [ ] Novas classes documentadas/descritas neste README, se forem utilitários globais.
+- [ ] Testar light e dark (especialmente dropdowns, timelines e modais PrimeNG).

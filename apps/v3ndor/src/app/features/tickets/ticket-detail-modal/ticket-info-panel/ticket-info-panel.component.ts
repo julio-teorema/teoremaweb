@@ -6,6 +6,7 @@ import {
   EventEmitter,
   inject,
   signal,
+  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -42,7 +43,7 @@ import { TicketDetail } from '@org/shared/models';
   styleUrls: ['./ticket-info-panel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TicketInfoPanelComponent {
+export class TicketInfoPanelComponent implements AfterViewInit {
   private readonly ticketService = inject(TicketService);
   private readonly messageService = inject(MessageService);
 
@@ -59,6 +60,11 @@ export class TicketInfoPanelComponent {
   editResponsibleName = '';
   editDeveloperName = '';
   editStatusDescription = '';
+
+  // Inicializar editUrgent quando o ticket é recebido
+  ngAfterViewInit() {
+    this.editUrgent = this.ticket.urgent === 1;
+  }
 
   // Novos campos editáveis (ordem de importância)
   editCustomerId = '';
@@ -97,7 +103,7 @@ export class TicketInfoPanelComponent {
         this.editUrgent = this.ticket.urgent === 1;
         break;
       case 'customer_id':
-        this.editCustomerId = (this.ticket.customer as any)?.id || '';
+        this.editCustomerId = (this.ticket.customer as { id?: string })?.id || '';
         break;
       case 'system_id':
         this.editSystemId = this.ticket.system?.id || '';
@@ -231,9 +237,10 @@ export class TicketInfoPanelComponent {
 
   toggleUrgent(): void {
     this.saving.set(true);
-    this.ticketService.patchTicket(this.ticket.id, { urgent: !this.ticket.urgent }).subscribe({
+    const newUrgent = this.editUrgent ? 1 : 0;
+    this.ticketService.patchTicket(this.ticket.id, { urgent: newUrgent }).subscribe({
       next: () => {
-        this.ticket.urgent = this.editUrgent ? 1 : 0;
+        this.ticket.urgent = newUrgent;
         this.saving.set(false);
         this.messageService.add({
           severity: 'success',
@@ -241,6 +248,7 @@ export class TicketInfoPanelComponent {
           detail: 'Urgência atualizada',
           life: 2000,
         });
+        this.ticketUpdated.emit(this.ticket);
       },
       error: () => {
         this.editUrgent = this.ticket.urgent === 1;
@@ -334,5 +342,31 @@ export class TicketInfoPanelComponent {
     if (!dateStr) return '—';
     const d = new Date(dateStr);
     return d.toLocaleDateString('pt-BR');
+  }
+
+  getSituationDescription(): string {
+    switch (this.ticket.situation) {
+      case 'A':
+        return 'Aberto';
+      case 'F':
+        return 'Fechado';
+      case 'C':
+        return 'Cancelado';
+      default:
+        return this.ticket.situation || '—';
+    }
+  }
+
+  getSituationClass(): string {
+    switch (this.ticket.situation) {
+      case 'A':
+        return 'situation-open';
+      case 'F':
+        return 'situation-closed';
+      case 'C':
+        return 'situation-cancelled';
+      default:
+        return '';
+    }
   }
 }

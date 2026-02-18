@@ -1,0 +1,131 @@
+/* ═══════════════════════════════════════════════
+   PrimeNG overrides alinhados aos tokens globais
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --p-surface-0: var(--v-bg-card);
+  --p-surface-50: var(--v-bg-elevated);
+  --p-surface-100: var(--v-bg-soft);
+  --p-text-color: var(--v-text-primary);
+  --p-text-muted-color: var(--v-text-muted);
+  --p-content-border-color: var(--v-border);
+}
+
+:root.dark {
+  --p-content-border-color: var(--v-border);
+}
+
+/* Diálogos */
+.p-dialog {
+  border: none !important;
+  box-shadow: var(--v-shadow-popover);
+  background: var(--v-bg-card);
+  color: var(--v-text-primary);
+}
+
+.dark .p-dialog {
+  background: var(--v-bg-card);
+  color: var(--v-text-primary);
+}
+
+.p-dialog-header,
+.p-dialog-content,
+.p-dialog-footer {
+  background: var(--v-bg-card);
+  color: var(--v-text-primary);
+  border-color: var(--v-border);
+}
+
+.p-dialog .p-dialog-header {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+.p-dialog .p-dialog-content {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
+.p-dialog-footer {
+  background: var(--v-bg-elevated);
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
+.p-dialog-mask {
+  background-color: var(--v-overlay);
+}
+
+/* Datepicker */
+.p-datepicker,
+.p-datepicker-panel {
+  z-index: 1400;
+  background: var(--v-bg-card);
+  border: 1px solid var(--v-border);
+  color: var(--v-text-primary);
+}
+
+.p-datepicker .p-datepicker-header {
+  background: var(--v-bg-elevated);
+  border-bottom: 1px solid var(--v-border);
+}
+
+.p-datepicker .p-datepicker-calendar .p-datepicker-day {
+  color: var(--v-text-primary);
+}
+
+.p-datepicker .p-datepicker-calendar .p-datepicker-day:hover {
+  background: var(--v-bg-elevated);
+}
+
+.p-datepicker .p-datepicker-calendar .p-datepicker-day.p-highlight {
+  background: var(--color-primary-blue);
+  color: #fff;
+}
+
+/* Select overlays */
+.p-select-overlay,
+.p-dropdown-panel,
+.p-multiselect-panel {
+  z-index: 1400;
+  background: var(--v-bg-card);
+  border: 1px solid var(--v-border);
+  color: var(--v-text-primary);
+  box-shadow: var(--v-shadow-popover);
+}
+
+.p-select-option,
+.p-dropdown-item,
+.p-multiselect-item {
+  color: var(--v-text-primary);
+}
+
+.p-select-option:hover,
+.p-dropdown-item:hover,
+.p-multiselect-item:hover {
+  background: var(--v-bg-elevated);
+}
+
+.p-select-option.p-select-option-selected,
+.p-dropdown-item.p-highlight,
+.p-multiselect-item.p-highlight {
+  background: var(--color-primary-blue);
+  color: #fff;
+}
+
+/* Confirm dialog */
+.p-confirm-dialog {
+  background: var(--v-bg-card);
+  color: var(--v-text-primary);
+  box-shadow: var(--v-shadow-popover);
+}
+
+.p-confirm-dialog-footer {
+  border-top: 1px solid var(--v-border);
+  background: var(--v-bg-elevated);
+}
+
+/* Focus state alinhado ao token */
+.p-focus {
+  box-shadow: var(--v-focus-ring);
+}

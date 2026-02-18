@@ -1,7 +1,7 @@
 <p-dialog header="Gerenciar Apontamentos - #{{ ticket.ticket_number_teorema }}" [(visible)]="visible" [modal]="true"
   [draggable]="false" [resizable]="false"
   [style]="{ width: '90vw', 'max-width': '850px', height: '90vh', 'max-height': '90vh', 'z-index': 1100 }"
-  [breakpoints]="{ '768px': '95vw', '480px': '100vw' }" (onHide)="onHide()"
+  [breakpoints]="{ '768px': '95vw', '480px': '100vw' }" (onHide)="onHide()" styleClass="time-entry-modal"
   [contentStyle]="{ padding: '0', height: 'calc(90vh - 130px)', 'overflow': 'auto' }">
 
   <!-- Abas do Modal -->
@@ -44,7 +44,7 @@
               <span class="required">*</span>
             </span>
             <p-select [options]="timeTypes" [(ngModel)]="timeEntryType" optionLabel="label" optionValue="value"
-              placeholder="Selecione o tipo" class="w-full" [style]="{ 'z-index': 1101 }" />
+              placeholder="Selecione o tipo" class="w-full" [style]="{ 'z-index': 1101 }" appendTo="body" />
           </div>
         </div>
         <div class="col-6">
@@ -54,7 +54,8 @@
               <span class="required">*</span>
             </span>
             <p-select [options]="attendanceTypes" [(ngModel)]="timeEntryAttendanceType" optionLabel="label"
-              optionValue="value" placeholder="Selecione o atendimento" class="w-full" [style]="{ 'z-index': 1102 }" />
+              optionValue="value" placeholder="Selecione o atendimento" class="w-full" [style]="{ 'z-index': 1102 }"
+              appendTo="body" />
           </div>
         </div>
         <div class="col-6">
@@ -64,7 +65,8 @@
               <span class="required">*</span>
             </span>
             <p-select [options]="statusOptions()" [(ngModel)]="timeEntryStatusId" optionLabel="label"
-              optionValue="value" placeholder="Selecione o status" class="w-full" [style]="{ 'z-index': 1103 }" />
+              optionValue="value" placeholder="Selecione o status" class="w-full" [style]="{ 'z-index': 1103 }"
+              appendTo="body" />
           </div>
         </div>
         <div class="col-6">
@@ -73,7 +75,8 @@
               Tarefa
             </span>
             <p-select [options]="taskOptions()" [(ngModel)]="timeEntryTaskId" optionLabel="label" optionValue="value"
-              placeholder="Selecione a tarefa (opcional)" class="w-full" [style]="{ 'z-index': 1104 }" />
+              placeholder="Selecione a tarefa (opcional)" class="w-full" [style]="{ 'z-index': 1104 }"
+              appendTo="body" />
           </div>
         </div>
         <div class="col-6">
@@ -83,7 +86,7 @@
               <span class="required">*</span>
             </span>
             <p-datepicker [(ngModel)]="timeEntryStartDate" [showTime]="true" [showSeconds]="false"
-              placeholder="Data e hora" class="w-full" [style]="{ 'z-index': 1003 }" />
+              placeholder="Data e hora" class="w-full" [style]="{ 'z-index': 1003 }" appendTo="body" />
           </div>
         </div>
         <div class="col-6">
@@ -92,7 +95,7 @@
               Fim
             </span>
             <p-datepicker [(ngModel)]="timeEntryEndDate" [showTime]="true" [showSeconds]="false"
-              placeholder="Data e hora" class="w-full" [style]="{ 'z-index': 1003 }" />
+              placeholder="Data e hora" class="w-full" [style]="{ 'z-index': 1003 }" appendTo="body" />
           </div>
         </div>
       </div>

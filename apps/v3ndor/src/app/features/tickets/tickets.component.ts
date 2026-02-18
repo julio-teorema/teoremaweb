@@ -70,7 +70,7 @@ export class TicketsComponent implements OnInit {
       htmlFormat: (_value: unknown, row: Record<string, unknown>) => {
         const num = String(row['ticket_number_teorema'] ?? '');
         const badge = row['urgent'] === 1
-          ? ' <span class="urgent-badge">URGENTE</span>'
+          ? ' <span class="v-urgent-badge">URGENTE</span>'
           : '';
         return `<span>${num}</span>${badge}`;
       },

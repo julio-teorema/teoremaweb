@@ -26,10 +26,10 @@
         <div class="situation-actions">
           @if (ticket.situation === 'A') {
           <p-button label="Fechar Chamado" icon="pi pi-lock" severity="secondary" variant="outlined"
-            [loading]="saving()" (onClick)="closeTicket()" size="small" />
+            [loading]="saving()" (onClick)="closeTicket()" size="small" styleClass="action-button" />
           } @else {
           <p-button label="Reabrir Chamado" icon="pi pi-lock-open" severity="secondary" variant="outlined"
-            [loading]="saving()" (onClick)="reopenTicket()" size="small" />
+            [loading]="saving()" (onClick)="reopenTicket()" size="small" styleClass="action-button" />
           }
         </div>
       </div>

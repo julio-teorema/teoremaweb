@@ -19,6 +19,9 @@
   margin: 0 1.25rem 1rem;
   border-radius: 0.5rem;
   flex-shrink: 0;
+  background: var(--v-bg-card);
+  border: 1px solid var(--v-border);
+  padding: 0.75rem 1rem;
 
   // Responsividade
   @media (max-width: 768px) {
@@ -48,14 +51,8 @@
 
 .filter-count {
   font-size: 0.75rem;
-  color: var(--v-text-muted, var(--p-text-muted-color));
+  color: var(--v-text-muted);
   font-weight: 500;
-
-  // Dark mode
-  :root.dark &,
-  .dark & {
-    color: var(--p-text-muted-color);
-  }
 }
 
 .timeline-empty {
@@ -65,14 +62,8 @@
   justify-content: center;
   gap: 0.75rem;
   height: 100%;
-  color: var(--v-text-muted, var(--p-text-muted-color));
+  color: var(--v-text-muted);
   font-size: 0.875rem;
-
-  // Dark mode
-  :root.dark &,
-  .dark & {
-    color: var(--p-text-muted-color);
-  }
 }
 
 .timeline-marker {
@@ -128,17 +119,17 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--v-text-secondary, var(--p-text-color));
+  color: var(--v-text-secondary);
 }
 
 .timeline-entry-date {
   font-size: 0.6875rem;
-  color: var(--v-text-muted, var(--p-text-muted-color));
+  color: var(--v-text-muted);
 }
 
 .timeline-entry-body {
   font-size: 0.8125rem;
-  color: var(--v-text-primary, var(--p-text-color));
+  color: var(--v-text-primary);
   line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;
@@ -167,7 +158,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  color: var(--v-text-secondary, var(--p-text-color));
+  color: var(--v-text-secondary);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
@@ -175,8 +166,8 @@
 .time-duration {
   font-size: 0.6875rem;
   font-weight: 600;
-  color: var(--p-primary-color, #6366f1);
-  background-color: var(--p-primary-50, rgba(99, 102, 241, 0.08));
+  color: var(--color-primary-blue);
+  background-color: color-mix(in srgb, var(--color-primary-blue) 18%, transparent);
   padding: 0.0625rem 0.375rem;
   border-radius: 0.25rem;
 }
@@ -244,36 +235,14 @@
 
 .attachment-info {
   font-size: 0.6875rem;
-  color: var(--p-text-color, #374151);
+  color: var(--v-text-secondary);
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
   padding: 0.25rem 0.5rem;
-  background-color: var(--p-surface-100, #f9fafb);
-  border: 1px solid var(--p-border-color, #e5e7eb);
+  background-color: var(--v-bg-elevated);
+  border: 1px solid var(--v-border);
   border-radius: 0.375rem;
-
-  // Dark mode - com cores fixas para garantir funcionamento
-  :root.dark &,
-  .dark & {
-    color: #ffffff !important;
-    background-color: rgba(255, 255, 255, 0.15) !important;
-    border-color: rgba(255, 255, 255, 0.3) !important;
-  }
-
-  // Alternativa para dark mode usando media query
-  @media (prefers-color-scheme: dark) {
-    color: #ffffff !important;
-    background-color: rgba(255, 255, 255, 0.15) !important;
-    border-color: rgba(255, 255, 255, 0.3) !important;
-  }
-
-  // Forçar visibilidade do texto em dark mode
-  :global(.dark) & {
-    color: #ffffff !important;
-    background-color: rgba(255, 255, 255, 0.15) !important;
-    border-color: rgba(255, 255, 255, 0.3) !important;
-  }
 }
 
 // Estilos para Opened
@@ -283,23 +252,22 @@
 
 .opened-info {
   font-size: 0.6875rem;
-  color: var(--p-text-color, #374151);
+  color: var(--state-success);
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
   padding: 0.25rem 0.5rem;
-  background-color: var(--p-green-50, rgba(16, 185, 129, 0.08));
-  border: 1px solid var(--p-green-200, rgba(16, 185, 129, 0.2));
+  background-color: var(--state-success-soft);
+  border: 1px solid color-mix(in srgb, var(--state-success) 30%, transparent);
   border-radius: 0.375rem;
-  color: var(--p-green-700, #15803d);
 }
 
-::ng-deep .timeline-container {
+:host ::ng-deep .timeline-container {
   .p-timeline-event-opposite {
     display: none !important;
   }
 
   .p-timeline-event-connector {
-    background-color: var(--p-content-border-color, #e5e7eb);
+    background-color: var(--v-border);
   }
 }

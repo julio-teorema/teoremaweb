@@ -3,7 +3,39 @@
   <div class="info-section">
     <h3 class="info-section-title">Informações Principais</h3>
 
-    <!-- 1. Cliente -->
+    <!-- 0. Situação -->
+    <div class="info-field critical-field">
+      <span class="info-label">Situação</span>
+      <div class="situation-container">
+        <span class="info-value" [class]="getSituationClass()">
+          {{ getSituationDescription() }}
+        </span>
+        <div class="situation-actions">
+          @if (ticket.situation === 'A') {
+          <p-button label="Fechar" icon="pi pi-lock" severity="secondary" variant="outlined" [loading]="saving()"
+            (onClick)="closeTicket()" size="small" />
+          } @else {
+          <p-button label="Reabrir" icon="pi pi-lock-open" severity="secondary" variant="outlined" [loading]="saving()"
+            (onClick)="reopenTicket()" size="small" />
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. Urgente -->
+    <div class="info-field critical-field">
+      <span class="info-label">Urgente</span>
+      <div class="urgent-container">
+        <span class="info-value" [class]="ticket.urgent ? 'urgent-yes' : 'urgent-no'">
+          {{ ticket.urgent ? 'Sim' : 'Não' }}
+        </span>
+        <div class="urgent-actions">
+          <p-toggleSwitch [(ngModel)]="editUrgent" (onChange)="toggleUrgent()" [disabled]="saving()" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Cliente -->
     <div class="info-field editable-field critical-field">
       <span class="info-label">Cliente</span>
       @if (editingField() === 'customer_id') {

@@ -29,7 +29,6 @@ import {
   TicketLog,
 } from '@org/shared/models';
 import { TicketInfoPanelComponent } from './ticket-info-panel/ticket-info-panel.component';
-import { TicketActionsComponent } from './ticket-actions/ticket-actions.component';
 import { TicketTimelineComponent } from './ticket-timeline/ticket-timeline.component';
 import { TicketActionBarComponent } from './ticket-action-bar/ticket-action-bar.component';
 
@@ -45,7 +44,6 @@ import { TicketActionBarComponent } from './ticket-action-bar/ticket-action-bar.
     ButtonModule,
     CheckboxModule,
     TicketInfoPanelComponent,
-    TicketActionsComponent,
     TicketTimelineComponent,
     TicketActionBarComponent,
   ],
@@ -296,5 +294,37 @@ export class TicketDetailModalComponent implements OnChanges {
       endDate: log.end_date,
       isOpen,
     };
+  }
+
+  getSituationDescription(situation: string): string {
+    switch (situation) {
+      case 'A':
+        return 'Aberto';
+      case 'F':
+        return 'Fechado';
+      case 'C':
+        return 'Cancelado';
+      default:
+        return situation || '—';
+    }
+  }
+
+  getSituationSeverity(situation: string): 'success' | 'danger' | 'warn' | 'info' | 'secondary' | 'contrast' {
+    switch (situation) {
+      case 'A':
+        return 'success';
+      case 'F':
+        return 'danger';
+      case 'C':
+        return 'warn';
+      default:
+        return 'secondary';
+    }
+  }
+
+  getDialogStyleClass(): string {
+    const baseClass = 'ticket-detail-dialog';
+    const urgentClass = this.ticket()?.urgent ? 'urgent-modal' : '';
+    return [baseClass, urgentClass].filter(Boolean).join(' ');
   }
 }
