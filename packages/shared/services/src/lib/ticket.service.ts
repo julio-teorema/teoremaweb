@@ -95,16 +95,14 @@ export class TicketService {
     );
   }
 
-  uploadDocument(ticketNumber: string, file: File): Observable<TicketDetail> {
+  uploadDocument(ticketNumber: string, file: File): Observable<unknown> {
     const formData = new FormData();
     formData.append('path', `tickets/${ticketNumber}`);
     formData.append('file', file, file.name);
 
-    return this.http.post<{ success: boolean; data: TicketDetail; message: string }>(
+    return this.http.post(
       `https://api-php.teorema.inf.br/v2/api/teorema/assets`,
       formData
-    ).pipe(
-      map(response => response.data)
     );
   }
 

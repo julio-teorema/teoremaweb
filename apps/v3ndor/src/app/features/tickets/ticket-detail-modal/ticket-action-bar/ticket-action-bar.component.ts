@@ -105,16 +105,29 @@ export class TicketActionBarComponent {
     this.uploading.set(true);
 
     this.ticketService.uploadDocument(ticketNumber, file).subscribe({
-      next: (updatedTicket) => {
-        this.uploading.set(false);
-        this.attachmentAdded.emit(updatedTicket);
-        this.activeAction.set('comment');
-        input.value = '';
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Sucesso',
-          detail: 'Anexo enviado com sucesso',
-          life: 3000,
+      next: () => {
+        this.ticketService.getById(this.ticket.id).subscribe({
+          next: (updatedTicket) => {
+            this.uploading.set(false);
+            this.attachmentAdded.emit(updatedTicket);
+            this.activeAction.set('comment');
+            input.value = '';
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Sucesso',
+              detail: 'Anexo enviado com sucesso',
+              life: 3000,
+            });
+          },
+          error: () => {
+            this.uploading.set(false);
+            this.messageService.add({
+              severity: 'warn',
+              summary: 'Aviso',
+              detail: 'Anexo enviado, mas não foi possível atualizar o chamado',
+              life: 5000,
+            });
+          },
         });
       },
       error: (error) => {
