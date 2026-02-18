@@ -100,7 +100,7 @@
             Tarefas ({{ t.tasks.length }}) · {{ getTotalTaskPoints() }} ponto(s)
           </h3>
           <div class="task-list">
-            @for (task of t.tasks; track task.id; let i = $index) {
+            @for (task of getSortedTasks(); track task.id) {
             <div class="task-item" [class.task-finished]="task.finished">
               <div class="task-item-header">
                 <span class="task-summary" [class.task-done]="task.finished">
@@ -128,8 +128,8 @@
               </div>
               <div class="task-item-bottom">
                 <div class="task-progress-bar">
-                  <div class="task-progress-fill" [style.width.%]="getTaskProgress(i)"
-                    [style.background-color]="getProgressColor(getTaskProgress(i))">
+                  <div class="task-progress-fill" [style.width.%]="getTaskProgress(task.id)"
+                    [style.background-color]="getProgressColor(getTaskProgress(task.id))">
                   </div>
                 </div>
                 <button class="task-timeentry-btn" (click)="startTimeEntryForTask(task.id)" pTooltip="Iniciar Apontamento" tooltipPosition="top">

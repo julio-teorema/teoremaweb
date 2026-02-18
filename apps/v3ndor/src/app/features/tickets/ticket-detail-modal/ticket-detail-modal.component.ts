@@ -73,7 +73,7 @@ export class TicketDetailModalComponent implements OnChanges {
   timelineEntries = signal<TicketTimelineEntry[]>([]);
   highlightedEntryId = signal<string | null>(null);
   showTaskModal = signal(false);
-  taskProgressMap = signal<Map<number, number>>(new Map());
+  taskProgressMap = signal<Map<string, number>>(new Map());
 
   headerTitle = computed(() => {
     const t = this.ticket();
@@ -188,9 +188,9 @@ export class TicketDetailModalComponent implements OnChanges {
     }
     this.ticketService.getTasksProgress(ticket.id).subscribe({
       next: (progressData: TaskProgressResponse[]) => {
-        const map = new Map<number, number>();
+        const map = new Map<string, number>();
         ticket.tasks.forEach((task, index) => {
-          map.set(index, progressData[index]?.percentage ?? 0);
+          map.set(task.id, progressData[index]?.percentage ?? 0);
         });
         this.taskProgressMap.set(map);
         this.cdr.markForCheck();
@@ -201,8 +201,8 @@ export class TicketDetailModalComponent implements OnChanges {
     });
   }
 
-  getTaskProgress(index: number): number {
-    return this.taskProgressMap().get(index) ?? 0;
+  getTaskProgress(taskId: string): number {
+    return this.taskProgressMap().get(taskId) ?? 0;
   }
 
   getProgressColor(percentage: number): string {
@@ -368,6 +368,12 @@ export class TicketDetailModalComponent implements OnChanges {
     const baseClass = 'ticket-detail-dialog';
     const urgentClass = this.ticket()?.urgent ? 'urgent-modal' : '';
     return [baseClass, urgentClass].filter(Boolean).join(' ');
+  }
+
+  getSortedTasks(): TicketTask[] {
+    const t = this.ticket();
+    if (!t?.tasks) return [];
+    return [...t.tasks].sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
   }
 
   getTotalTaskPoints(): number {
