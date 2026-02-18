@@ -24,9 +24,21 @@
     </div>
     }
     @case ('attachment') {
-    <div class="attachment-placeholder">
-      <i class="pi pi-cloud-upload" style="font-size: 1.25rem;"></i>
-      <span>Arraste um arquivo ou clique para selecionar</span>
+    <div class="attachment-upload">
+      <input
+        type="file"
+        #fileInput
+        (change)="onFileSelected($event)"
+        style="display: none;"
+      />
+      <button
+        type="button"
+        class="upload-button"
+        (click)="fileInput.click()"
+      >
+        <i class="pi pi-cloud-upload" style="font-size: 1.25rem;"></i>
+        <span>Arraste um arquivo ou clique para selecionar</span>
+      </button>
     </div>
     }
     @case ('timeentry') {

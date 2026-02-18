@@ -51,6 +51,7 @@ export class TicketActionBarComponent {
   private _ticket!: TicketDetail;
   @Output() commentAdded = new EventEmitter<TicketDetail>();
   @Output() timeEntryAdded = new EventEmitter<TicketDetail>();
+  @Output() attachmentAdded = new EventEmitter<TicketDetail>();
 
   activeAction = signal<ActionType>('comment');
   commentText = signal('');
@@ -81,8 +82,65 @@ export class TicketActionBarComponent {
     return activeEntry ? 'danger' : 'secondary';
   }
 
+  uploading = signal(false);
+
   setAction(type: ActionType): void {
     this.activeAction.set(type);
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+    const ticketNumber = this.ticket?.ticket_number_teorema;
+
+    if (!ticketNumber) {
+      console.error('Ticket number não encontrado');
+      return;
+    }
+
+    this.uploading.set(true);
+
+    this.ticketService.uploadDocument(ticketNumber, file).subscribe({
+      next: () => {
+        this.ticketService.getById(this.ticket.id).subscribe({
+          next: (updatedTicket) => {
+            this.uploading.set(false);
+            this.attachmentAdded.emit(updatedTicket);
+            this.activeAction.set('comment');
+            input.value = '';
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Sucesso',
+              detail: 'Anexo enviado com sucesso',
+              life: 3000,
+            });
+          },
+          error: () => {
+            this.uploading.set(false);
+            this.messageService.add({
+              severity: 'warn',
+              summary: 'Aviso',
+              detail: 'Anexo enviado, mas não foi possível atualizar o chamado',
+              life: 5000,
+            });
+          },
+        });
+      },
+      error: (error) => {
+        this.uploading.set(false);
+        console.error('Erro ao fazer upload do anexo:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Erro ao enviar anexo',
+          life: 5000,
+        });
+      },
+    });
   }
 
   onSendComment(): void {
