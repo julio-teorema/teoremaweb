@@ -97,7 +97,7 @@
         <div class="content-section">
           <h3 class="content-section-title">
             <i class="pi pi-check-square"></i>
-            Tarefas ({{ t.tasks.length }})
+            Tarefas ({{ t.tasks.length }}) · {{ getTotalTaskPoints() }} ponto(s)
           </h3>
           <div class="task-list">
             @for (task of t.tasks; track task.id; let i = $index) {
@@ -126,10 +126,15 @@
                 </span>
                 }
               </div>
-              <div class="task-progress-bar">
-                <div class="task-progress-fill" [style.width.%]="getTaskProgress(i)"
-                  [style.background-color]="getProgressColor(getTaskProgress(i))">
+              <div class="task-item-bottom">
+                <div class="task-progress-bar">
+                  <div class="task-progress-fill" [style.width.%]="getTaskProgress(i)"
+                    [style.background-color]="getProgressColor(getTaskProgress(i))">
+                  </div>
                 </div>
+                <button class="task-timeentry-btn" (click)="startTimeEntryForTask(task.id)" pTooltip="Iniciar Apontamento" tooltipPosition="top">
+                  <i class="pi pi-play"></i>
+                </button>
               </div>
             </div>
             }

@@ -367,8 +367,18 @@ export class TicketDetailModalComponent implements OnChanges {
     return [baseClass, urgentClass].filter(Boolean).join(' ');
   }
 
+  getTotalTaskPoints(): number {
+    const t = this.ticket();
+    if (!t?.tasks) return 0;
+    return t.tasks.reduce((sum, task) => sum + (task.estimated_effort ?? 0), 0);
+  }
+
   openTaskModal(): void {
     this.showTaskModal.set(true);
+  }
+
+  startTimeEntryForTask(taskId: string): void {
+    this.onTaskStartTimeEntry(taskId);
   }
 
   onTaskModalTicketUpdated(updatedTicket: TicketDetail): void {
