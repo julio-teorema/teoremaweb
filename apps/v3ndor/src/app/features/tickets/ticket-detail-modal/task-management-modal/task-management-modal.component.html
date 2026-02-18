@@ -127,7 +127,10 @@
 
           <div class="col-12">
             <div class="field-group">
-              <span class="field-label">Descrição Completa</span>
+              <span class="field-label">
+                Descrição Completa
+                <span class="required">*</span>
+              </span>
               <textarea pTextarea [autoResize]="true" [rows]="4" [ngModel]="formDescription()"
                 (ngModelChange)="formDescription.set($event)" placeholder="Detalhes da tarefa..."
                 class="w-full"></textarea>
@@ -162,7 +165,10 @@
 
           <div class="col-6">
             <div class="field-group">
-              <span class="field-label">Status</span>
+              <span class="field-label">
+                Status
+                <span class="required">*</span>
+              </span>
               <p-select [options]="statusOptions" [(ngModel)]="formStatusId" optionLabel="label"
                 optionValue="value" placeholder="Selecione o status" class="w-full" appendTo="body"
                 [style]="{ 'z-index': 1105 }" />
@@ -190,7 +196,7 @@
       @if (showForm()) {
       <p-button label="Cancelar" icon="pi pi-times" severity="secondary" (onClick)="closeForm()" />
       <p-button label="Salvar" icon="pi pi-check" severity="success" [loading]="saving()"
-        [disabled]="!formSummary().trim()" (onClick)="saveTask()" />
+        [disabled]="!formSummary().trim() || !formDescription().trim() || !formStatusId()" (onClick)="saveTask()" />
       } @else {
       <p-button label="Fechar" icon="pi pi-times" severity="secondary" (onClick)="onHide()" />
       }

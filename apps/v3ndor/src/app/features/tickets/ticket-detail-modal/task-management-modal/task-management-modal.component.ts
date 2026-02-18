@@ -154,6 +154,9 @@ export class TaskManagementModalComponent implements OnInit {
   openNewTaskForm(): void {
     this.resetForm();
     this.editingTask.set(null);
+    if (this.ticket?.status?.id) {
+      this.formStatusId.set(this.ticket.status.id);
+    }
     this.showForm.set(true);
   }
 
@@ -187,11 +190,18 @@ export class TaskManagementModalComponent implements OnInit {
 
   saveTask(): void {
     const summary = this.formSummary().trim();
-    if (!summary) {
+    const description = this.formDescription().trim();
+    const statusId = this.formStatusId();
+
+    if (!summary || !description || !statusId) {
+      const missing: string[] = [];
+      if (!summary) missing.push('descrição resumida');
+      if (!description) missing.push('descrição completa');
+      if (!statusId) missing.push('status');
       this.messageService.add({
         severity: 'warn',
         summary: 'Atenção',
-        detail: 'A descrição resumida é obrigatória',
+        detail: `Campo(s) obrigatório(s): ${missing.join(', ')}`,
         life: 3000,
       });
       return;
@@ -201,16 +211,12 @@ export class TaskManagementModalComponent implements OnInit {
 
     const payload: Partial<TicketTask> = {
       summary,
-      description: this.formDescription().trim(),
+      description,
       estimated_effort: this.formEstimatedEffort(),
       expected_date: this.formExpectedDate() ? this.toLocalISOString(this.formExpectedDate() as Date) : null,
       difficulty: this.formDifficulty(),
+      status: { id: statusId, description: '' },
     };
-
-    const statusId = this.formStatusId();
-    if (statusId) {
-      payload.status = { id: statusId, description: '' };
-    }
 
     const userId = this.formUserId();
     if (userId) {
