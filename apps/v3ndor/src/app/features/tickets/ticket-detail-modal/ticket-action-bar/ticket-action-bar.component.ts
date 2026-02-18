@@ -59,6 +59,7 @@ export class TicketActionBarComponent {
   // TimeEntry properties
   showTimeEntryModal = signal(false);
   activeTimeEntry = signal<TicketLog | null>(null);
+  preSelectedTaskId = signal<string | null>(null);
 
   // Detectar apontamento ativo
   private findActiveTimeEntry(): TicketLog | null {
@@ -136,10 +137,11 @@ export class TicketActionBarComponent {
       });
   }
 
-  openTimeEntryModal(): void {
+  openTimeEntryModal(taskId?: string): void {
     // Detectar apontamento ativo antes de abrir o modal
     const activeEntry = this.findActiveTimeEntry();
     this.activeTimeEntry.set(activeEntry);
+    this.preSelectedTaskId.set(taskId ?? null);
 
     this.showTimeEntryModal.set(true);
   }

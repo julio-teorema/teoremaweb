@@ -42,5 +42,5 @@
 
 <!-- Time Entry Modal -->
 <app-time-entry-modal [ticket]="ticket" [(visible)]="showTimeEntryModal" [ticketTimeEntries]="getTimeEntries()"
-  [activeTimeEntry]="activeTimeEntry()" (timeEntryAdded)="onTimeEntryModalSaved($event)"
+  [activeTimeEntry]="activeTimeEntry()" [initialTaskId]="preSelectedTaskId()" (timeEntryAdded)="onTimeEntryModalSaved($event)"
   (timeEntryStopped)="onStopTimeEntry()" />

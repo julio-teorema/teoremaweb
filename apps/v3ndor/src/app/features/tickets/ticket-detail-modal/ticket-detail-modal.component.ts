@@ -392,10 +392,10 @@ export class TicketDetailModalComponent implements OnChanges {
     this.cdr.markForCheck();
   }
 
-  onTaskStartTimeEntry(_taskId: string): void {
+  onTaskStartTimeEntry(taskId: string): void {
     this.showTaskModal.set(false);
     if (this.actionBarRef) {
-      this.actionBarRef.openTimeEntryModal();
+      this.actionBarRef.openTimeEntryModal(taskId);
     }
   }
 }
