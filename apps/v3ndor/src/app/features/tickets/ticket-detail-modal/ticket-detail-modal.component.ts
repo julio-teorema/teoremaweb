@@ -10,6 +10,7 @@ import {
   OnChanges,
   SimpleChanges,
   ChangeDetectorRef,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -59,6 +60,8 @@ import { TaskManagementModalComponent } from './task-management-modal/task-manag
 export class TicketDetailModalComponent implements OnChanges {
   private readonly ticketService = inject(TicketService);
   private readonly cdr = inject(ChangeDetectorRef);
+
+  @ViewChild(TicketActionBarComponent) actionBarRef?: TicketActionBarComponent;
 
   @Input() ticketId: string | null = null;
   @Input() visible = false;
@@ -391,9 +394,8 @@ export class TicketDetailModalComponent implements OnChanges {
 
   onTaskStartTimeEntry(_taskId: string): void {
     this.showTaskModal.set(false);
-    const actionBar = document.querySelector('app-ticket-action-bar');
-    if (actionBar) {
-      (actionBar as unknown as { openTimeEntryModal: () => void }).openTimeEntryModal();
+    if (this.actionBarRef) {
+      this.actionBarRef.openTimeEntryModal();
     }
   }
 }
