@@ -45,6 +45,12 @@
               </span>
             </div>
 
+            @if (task.description && task.description !== task.summary) {
+            <div class="task-description-row">
+              {{ task.description }}
+            </div>
+            }
+
             <div class="task-meta-row">
               @if (task.user; as taskUser) {
               <span class="task-user">
