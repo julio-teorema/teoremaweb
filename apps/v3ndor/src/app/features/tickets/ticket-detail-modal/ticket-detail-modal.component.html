@@ -100,15 +100,35 @@
             Tarefas ({{ t.tasks.length }})
           </h3>
           <div class="task-list">
-            @for (task of t.tasks; track task.id) {
-            <div class="task-item">
-              <p-checkbox [(ngModel)]="task.finished" [binary]="true" [disabled]="true" />
-              <span class="task-label" [class.task-done]="task.finished">
-                {{ task.description }}
-              </span>
-              @if (task.status) {
-              <span class="task-status">{{ task.status.description }}</span>
-              }
+            @for (task of t.tasks; track task.id; let i = $index) {
+            <div class="task-item" [class.task-finished]="task.finished">
+              <div class="task-item-header">
+                <span class="task-summary" [class.task-done]="task.finished">
+                  {{ task.summary || task.description }}
+                </span>
+                @if (task.status) {
+                <span class="task-status-badge">{{ task.status.description }}</span>
+                }
+              </div>
+              <div class="task-item-meta">
+                @if (task.systems?.length) {
+                <span class="task-meta-tag">
+                  <i class="pi pi-box"></i>
+                  {{ task.systems[0].description }}
+                </span>
+                }
+                @if (task.user; as taskUser) {
+                <span class="task-meta-tag">
+                  <i class="pi pi-user"></i>
+                  {{ taskUser.name }}
+                </span>
+                }
+              </div>
+              <div class="task-progress-bar">
+                <div class="task-progress-fill" [style.width.%]="getTaskProgress(i)"
+                  [style.background-color]="getProgressColor(getTaskProgress(i))">
+                </div>
+              </div>
             </div>
             }
           </div>
