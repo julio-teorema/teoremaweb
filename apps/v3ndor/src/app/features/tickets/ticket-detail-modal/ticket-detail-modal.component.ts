@@ -386,6 +386,19 @@ export class TicketDetailModalComponent implements OnChanges {
     this.showTaskModal.set(true);
   }
 
+  toggleTaskFinished(task: TicketTask): void {
+    const newFinished = !task.finished;
+    this.ticketService.updateTask(task.id, { finished: newFinished }).subscribe({
+      next: (updatedTicket) => {
+        this.ticket.set(updatedTicket);
+        this.timelineEntries.set(this.buildTimeline(updatedTicket));
+        this.ticketUpdated.emit(updatedTicket);
+        this.loadTaskProgress(updatedTicket);
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
   startTimeEntryForTask(taskId: string): void {
     this.onTaskStartTimeEntry(taskId);
   }

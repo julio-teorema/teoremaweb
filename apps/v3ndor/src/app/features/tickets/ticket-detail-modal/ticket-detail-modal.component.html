@@ -103,6 +103,7 @@
             @for (task of getSortedTasks(); track task.id) {
             <div class="task-item" [class.task-finished]="task.finished">
               <div class="task-item-header">
+                <p-checkbox [ngModel]="task.finished" [binary]="true" (onChange)="toggleTaskFinished(task)" />
                 <span class="task-summary" [class.task-done]="task.finished">
                   {{ task.summary || task.description }}
                 </span>

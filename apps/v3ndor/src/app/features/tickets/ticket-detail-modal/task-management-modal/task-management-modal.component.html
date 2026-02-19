@@ -151,7 +151,10 @@
 
           <div class="col-6">
             <div class="field-group">
-              <span class="field-label">Esforço Estimado (pontos)</span>
+              <span class="field-label">
+                Esforço Estimado (pontos)
+                <span class="required">*</span>
+              </span>
               <input pInputText type="number" [ngModel]="formEstimatedEffort()"
                 (ngModelChange)="formEstimatedEffort.set($event)" placeholder="1 ponto = 4 horas"
                 class="w-full" />
@@ -198,7 +201,7 @@
       @if (showForm()) {
       <p-button label="Cancelar" icon="pi pi-times" severity="secondary" (onClick)="closeForm()" />
       <p-button label="Salvar" icon="pi pi-check" severity="success" [loading]="saving()"
-        [disabled]="!formSummary().trim() || !formDescription().trim() || !formStatusId() || !formUserId()" (onClick)="saveTask()" />
+        [disabled]="!formSummary().trim() || !formDescription().trim() || !formStatusId() || !formUserId() || !formEstimatedEffort()" (onClick)="saveTask()" />
       } @else {
       <p-button label="Fechar" icon="pi pi-times" severity="secondary" (onClick)="onHide()" />
       }

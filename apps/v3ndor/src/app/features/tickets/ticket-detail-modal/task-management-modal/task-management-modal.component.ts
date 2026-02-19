@@ -211,7 +211,7 @@ export class TaskManagementModalComponent implements OnInit {
   private resetForm(): void {
     this.formSummary.set('');
     this.formDescription.set('');
-    this.formEstimatedEffort.set(null);
+    this.formEstimatedEffort.set(1);
     this.formExpectedDate.set(null);
     this.formDifficulty.set('médio');
     this.formStatusId.set(null);
@@ -225,12 +225,15 @@ export class TaskManagementModalComponent implements OnInit {
 
     const userId = this.formUserId();
 
-    if (!summary || !description || !statusId || !userId) {
+    const effort = this.formEstimatedEffort();
+
+    if (!summary || !description || !statusId || !userId || !effort) {
       const missing: string[] = [];
       if (!summary) missing.push('descrição resumida');
       if (!description) missing.push('descrição completa');
       if (!statusId) missing.push('status');
       if (!userId) missing.push('desenvolvedor');
+      if (!effort) missing.push('esforço técnico');
       this.messageService.add({
         severity: 'warn',
         summary: 'Atenção',
