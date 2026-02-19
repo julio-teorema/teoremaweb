@@ -76,7 +76,7 @@ export class TaskManagementModalComponent implements OnInit {
 
   private _visible = false;
   @Output() visibleChange = new EventEmitter<boolean>();
-  @Output() ticketUpdated = new EventEmitter<TicketDetail>();
+  @Output() tasksUpdated = new EventEmitter<TicketTask[]>();
   @Output() startTimeEntry = new EventEmitter<string>();
 
   tasks = signal<TaskWithProgress[]>([]);
@@ -84,6 +84,7 @@ export class TaskManagementModalComponent implements OnInit {
   editingTask = signal<TicketTask | null>(null);
   saving = signal(false);
   draggedIndex = signal<number | null>(null);
+  dropTarget = signal<{ index: number; position: 'top' | 'bottom' } | null>(null);
 
   formSummary = signal('');
   formDescription = signal('');
@@ -149,30 +150,30 @@ export class TaskManagementModalComponent implements OnInit {
   }
 
   private loadTasksWithProgress(): void {
-    if (!this.ticket?.tasks) {
-      this.tasks.set([]);
-      return;
-    }
-
-    const sortedTasks = [...this.ticket.tasks].sort((a, b) => a.sequence - b.sequence);
-    const tasksWithProgress: TaskWithProgress[] = sortedTasks.map(t => ({
-      ...t,
-      progress: 0,
-    }));
-    this.tasks.set(tasksWithProgress);
-
-    this.ticketService.getTasksProgress(this.ticket.id).subscribe({
-      next: (progressData: TaskProgressResponse[]) => {
-        const updated = this.tasks().map((task, index) => ({
-          ...task,
-          progress: progressData[index]?.percentage ?? 0,
-        }));
-        this.tasks.set(updated);
+    this.ticketService.listTasks(this.ticket.id).subscribe({
+      next: (tasks: TicketTask[]) => {
+        const sortedTasks = [...tasks].sort((a, b) => a.sequence - b.sequence);
+        const tasksWithProgress: TaskWithProgress[] = sortedTasks.map(t => ({ ...t, progress: 0 }));
+        this.tasks.set(tasksWithProgress);
         this.cdr.markForCheck();
+
+        this.ticketService.getTasksProgress(this.ticket.id).subscribe({
+          next: (progressData: TaskProgressResponse[]) => {
+            const progressMap = new Map(Object.entries(progressData).map(([taskId, progress]) => [taskId, progress.percentage]));
+            const updatedWithProgress = this.tasks().map(task => ({
+              ...task,
+              progress: progressMap.get(task.id) ?? 0,
+            }));
+            this.tasks.set(updatedWithProgress);
+            this.cdr.markForCheck();
+          },
+          error: (err: unknown) => console.error('Error loading task progress:', err),
+        });
       },
       error: (err: unknown) => {
-        console.error('Error loading task progress:', err);
-      },
+        console.error('Error loading tasks:', err);
+        this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível carregar as tarefas.' });
+      }
     });
   }
 
@@ -242,32 +243,33 @@ export class TaskManagementModalComponent implements OnInit {
 
     this.saving.set(true);
 
-    const payload: Partial<TicketTask> = {
+    const payload: Partial<TicketTask> & { ticket_status_id?: string | null; user_id?: string | null } = {
       summary,
       description,
       estimated_effort: this.formEstimatedEffort(),
       expected_date: this.formExpectedDate() ? this.toLocalISOString(this.formExpectedDate() as Date) : null,
       difficulty: this.formDifficulty(),
-      status: { id: statusId, description: '' },
+      ticket_status_id: statusId,
+      user_id: userId
     };
-
-    payload.user = { id: userId, name: '' };
 
     const editing = this.editingTask();
     if (editing) {
-      this.ticketService.updateTask(editing.id, payload).subscribe({
-        next: (updatedTicket) => {
-          this.saving.set(false);
-          this.ticket = updatedTicket;
-          this.loadTasksWithProgress();
-          this.closeForm();
-          this.ticketUpdated.emit(updatedTicket);
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Sucesso',
-            detail: 'Tarefa atualizada',
-            life: 3000,
+      this.ticketService.updateTask(this.ticket.id, editing.id, payload).subscribe({
+        next: (updatedTask) => {
+          this.tasks.update(currentTasks => {
+            const index = currentTasks.findIndex(t => t.id === updatedTask.id);
+            if (index > -1) {
+              const newTasks = [...currentTasks];
+              newTasks[index] = { ...newTasks[index], ...updatedTask };
+              return newTasks;
+            }
+            return currentTasks;
           });
+          this.saving.set(false);
+          this.closeForm();
+          this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Tarefa atualizada' });
+          this.tasksUpdated.emit(this.tasks());
         },
         error: () => {
           this.saving.set(false);
@@ -280,20 +282,14 @@ export class TaskManagementModalComponent implements OnInit {
         },
       });
     } else {
-      payload.sequence = (this.ticket.tasks?.length ?? 0) + 1;
+      payload.sequence = (this.tasks()?.length ?? 0) + 1;
       this.ticketService.createTask(this.ticket.id, payload).subscribe({
-        next: (updatedTicket) => {
+        next: (newTask) => {
+          this.tasks.update(currentTasks => [...currentTasks, { ...newTask, progress: 0 }]);
           this.saving.set(false);
-          this.ticket = updatedTicket;
-          this.loadTasksWithProgress();
           this.closeForm();
-          this.ticketUpdated.emit(updatedTicket);
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Sucesso',
-            detail: 'Tarefa criada',
-            life: 3000,
-          });
+          this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Tarefa criada' });
+          this.tasksUpdated.emit(this.tasks());
         },
         error: () => {
           this.saving.set(false);
@@ -321,21 +317,11 @@ export class TaskManagementModalComponent implements OnInit {
   }
 
   private deleteTask(task: TicketTask): void {
-    this.ticketService.deleteTask(task.id).subscribe({
+    this.ticketService.deleteTask(this.ticket.id, task.id).subscribe({
       next: () => {
-        this.ticketService.getById(this.ticket.id).subscribe({
-          next: (updatedTicket) => {
-            this.ticket = updatedTicket;
-            this.loadTasksWithProgress();
-            this.ticketUpdated.emit(updatedTicket);
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Sucesso',
-              detail: 'Tarefa excluída',
-              life: 3000,
-            });
-          },
-        });
+        this.tasks.update(currentTasks => currentTasks.filter(t => t.id !== task.id));
+        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Tarefa excluída' });
+        this.tasksUpdated.emit(this.tasks());
       },
       error: () => {
         this.messageService.add({
@@ -349,12 +335,25 @@ export class TaskManagementModalComponent implements OnInit {
   }
 
   toggleTaskFinished(task: TaskWithProgress): void {
-    const newFinished = !task.finished;
-    this.ticketService.updateTask(task.id, { finished: newFinished }).subscribe({
-      next: (updatedTicket) => {
-        this.ticket = updatedTicket;
-        this.loadTasksWithProgress();
-        this.ticketUpdated.emit(updatedTicket);
+    const newFinished = task.finished;
+    this.ticketService.updateTask(this.ticket.id, task.id, { finished: newFinished }).subscribe({
+      next: (updatedTask) => {
+        this.tasks.update(currentTasks => {
+          const index = currentTasks.findIndex(t => t.id === updatedTask.id);
+          if (index > -1) {
+            const newTasks = [...currentTasks];
+            newTasks[index] = { ...newTasks[index], ...updatedTask };
+            return newTasks;
+          }
+          return currentTasks;
+        });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Sucesso',
+          detail: 'Status da tarefa atualizado.',
+          life: 3000,
+        });
+        this.tasksUpdated.emit(this.tasks());
       },
       error: () => {
         this.messageService.add({
@@ -375,28 +374,63 @@ export class TaskManagementModalComponent implements OnInit {
     this.draggedIndex.set(index);
   }
 
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
+  onDragEnd(): void {
+    this.draggedIndex.set(null);
+    this.dropTarget.set(null);
   }
 
-  onDrop(targetIndex: number): void {
+  onDragLeave(): void {
+    this.dropTarget.set(null);
+  }
+
+
+  onDragOver(event: DragEvent, index: number): void {
+    event.preventDefault();
+    const targetElement = (event.currentTarget as HTMLElement);
+    const rect = targetElement.getBoundingClientRect();
+    const isTopHalf = event.clientY < rect.top + rect.height / 2;
+    this.dropTarget.set({ index, position: isTopHalf ? 'top' : 'bottom' });
+  }
+
+
+  onDrop(): void {
     const sourceIndex = this.draggedIndex();
-    if (sourceIndex === null || sourceIndex === targetIndex) {
+    const dropTargetInfo = this.dropTarget();
+
+    if (sourceIndex === null || dropTargetInfo === null) {
       this.draggedIndex.set(null);
+      this.dropTarget.set(null);
       return;
     }
 
-    const currentTasks = [...this.tasks()];
-    const [moved] = currentTasks.splice(sourceIndex, 1);
-    currentTasks.splice(targetIndex, 0, moved);
-    this.tasks.set(currentTasks);
+    let finalTargetIndex = dropTargetInfo.index;
+    if (sourceIndex < dropTargetInfo.index && dropTargetInfo.position === 'top') {
+      finalTargetIndex--;
+    } else if (sourceIndex > dropTargetInfo.index && dropTargetInfo.position === 'bottom') {
+      finalTargetIndex++;
+    }
+
+    if (sourceIndex === finalTargetIndex) {
+      this.draggedIndex.set(null);
+      this.dropTarget.set(null);
+      return;
+    }
+
+    const tasks = [...this.tasks()];
+    const [moved] = tasks.splice(sourceIndex, 1);
+    tasks.splice(finalTargetIndex, 0, moved);
+
+    // Update sequence property for all tasks
+    const updatedTasksWithSequence = tasks.map((task, index) => ({ ...task, sequence: index + 1 }));
+
+    this.tasks.set(updatedTasksWithSequence);
     this.draggedIndex.set(null);
 
-    const taskIds = currentTasks.map(t => t.id);
-    this.ticketService.reorderTasks(this.ticket.id, taskIds).subscribe({
-      next: (updatedTicket) => {
-        this.ticket = updatedTicket;
-        this.ticketUpdated.emit(updatedTicket);
+    const payload = updatedTasksWithSequence.map(t => ({ id: t.id, sequence: t.sequence }));
+    this.ticketService.reorderTasks(this.ticket.id, payload).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Ordem das tarefas salva.' });
+        this.tasksUpdated.emit(this.tasks());
       },
       error: () => {
         this.loadTasksWithProgress();
@@ -410,9 +444,6 @@ export class TaskManagementModalComponent implements OnInit {
     });
   }
 
-  onDragEnd(): void {
-    this.draggedIndex.set(null);
-  }
 
   onHide(): void {
     this.visibleChange.emit(false);

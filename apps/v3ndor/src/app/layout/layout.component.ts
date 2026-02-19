@@ -11,6 +11,8 @@ interface NavItem {
   icon: string;
   route?: string;
   children?: NavItem[];
+  badge?: string;
+  disabled?: boolean;
 }
 
 @Component({
@@ -46,11 +48,9 @@ export class LayoutComponent {
       icon: 'pi pi-ticket',
       children: [
         { label: 'Chamados', icon: 'pi pi-list', route: '/tickets' },
+        { label: 'Sprint', icon: 'pi pi-th-large', badge: 'Em breve', disabled: true },
       ],
     },
-    { label: 'CRM', icon: 'pi pi-users', route: '/crm' },
-    { label: 'Vendas', icon: 'pi pi-shopping-cart', route: '/vendas' },
-    { label: 'Cotações', icon: 'pi pi-file', route: '/cotacoes' },
   ];
 
   isParentActive(item: NavItem): boolean {

@@ -371,9 +371,7 @@ export class TicketDetailModalComponent implements OnChanges {
   }
 
   getSortedTasks(): TicketTask[] {
-    const t = this.ticket();
-    if (!t?.tasks) return [];
-    return [...t.tasks].sort((a, b) => (a.sequence ?? 0) - (b.sequence ?? 0));
+    return this.ticket()?.tasks ?? [];
   }
 
   getTotalTaskPoints(): number {
@@ -390,13 +388,14 @@ export class TicketDetailModalComponent implements OnChanges {
     this.onTaskStartTimeEntry(taskId);
   }
 
-  onTaskModalTicketUpdated(updatedTicket: TicketDetail): void {
-    this.ticket.set(updatedTicket);
-    this.timelineEntries.set(this.buildTimeline(updatedTicket));
-    this.ticketUpdated.emit(updatedTicket);
-    this.loadTaskProgress(updatedTicket);
-    this.cdr.markForCheck();
+  onTasksUpdated(tasks: TicketTask[]): void {
+    const currentTicket = this.ticket();
+    if (currentTicket) {
+      const updatedTicket = { ...currentTicket, tasks };
+      this.onTicketUpdated(updatedTicket);
+    }
   }
+
 
   onTaskStartTimeEntry(taskId: string): void {
     this.showTaskModal.set(false);

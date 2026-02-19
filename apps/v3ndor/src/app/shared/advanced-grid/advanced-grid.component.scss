@@ -203,3 +203,13 @@
     background-color: color-mix(in srgb, var(--state-danger) 20%, transparent) !important;
   }
 }
+
+// Efeito de hover nas linhas da tabela
+:host ::ng-deep .advanced-grid-table .p-datatable-tbody>tr:not(.group-header-row):not(.p-datatable-emptymessage-row) {
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--color-primary-blue) 8%, var(--v-bg-card)) !important;
+  }
+}

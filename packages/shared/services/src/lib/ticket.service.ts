@@ -50,13 +50,16 @@ export class TicketService {
   }
 
   getTasksProgress(ticketId: string): Observable<TaskProgressResponse[]> {
-    return this.http.get<TaskProgressResponse[]>(`${this.baseUrl}/tasks/progress/${ticketId}`);
+    return this.http.get<TaskProgressResponse[]>(`${this.baseUrl}/tickets/${ticketId}/tasks/progress`);
   }
 
-  patchTicket(ticketId: string, fields: Record<string, unknown>): Observable<TicketDetail[]> {
-    return this.http.patch<TicketDetail[]>(`${this.baseUrl}/tickets/patch-multiple`, [
-      { id: ticketId, ...fields },
-    ]);
+  patchTicket(ticketId: string, fields: Record<string, unknown>): Observable<TicketDetail> {
+    return this.http.patch<{ success: boolean; data: TicketDetail }>(`${this.baseUrl}/tickets/${ticketId}`, fields).pipe(map(res => res.data));
+  }
+
+  listTasks(ticketId: string): Observable<TicketTask[]> {
+    return this.http.get<{ success: boolean; data: TicketTask[] }>(`${this.baseUrl}/tickets/${ticketId}/tasks`)
+      .pipe(map(response => response.data));
   }
 
   startTimeEntry(ticketId: string, payload: {
@@ -96,34 +99,25 @@ export class TicketService {
   }
 
   getActiveTimeEntry(ticketId: string, userId: string): Observable<TimeEntry | null> {
-    return this.http.get<{ success: boolean; data: TimeEntry | null; message: string }>(`${this.baseUrl}/tickets/${ticketId}/timeentry/active?user_id=${userId}`)
-      .pipe(
-        map(response => response.data)
-      );
+    return this.http.get<{ success: boolean; data: TimeEntry | null }>(`${this.baseUrl}/tickets/${ticketId}/timeentry/active?user_id=${userId}`)
+      .pipe(map(response => response.data));
   }
 
-  createTask(ticketId: string, payload: Partial<TicketTask>): Observable<TicketDetail> {
-    return this.http.post<{ success: boolean; data: TicketDetail; message: string }>(`${this.baseUrl}/tickets/${ticketId}/tasks`, payload)
-      .pipe(
-        map(response => response.data)
-      );
+  createTask(ticketId: string, payload: Partial<TicketTask>): Observable<TicketTask> {
+    return this.http.post<{ success: boolean; data: TicketTask }>(`${this.baseUrl}/tickets/${ticketId}/tasks`, payload)
+      .pipe(map(response => response.data));
   }
 
-  updateTask(taskId: string, fields: Partial<TicketTask>): Observable<TicketDetail> {
-    return this.http.patch<{ success: boolean; data: TicketDetail; message: string }>(`${this.baseUrl}/tasks/${taskId}`, fields)
-      .pipe(
-        map(response => response.data)
-      );
+  updateTask(ticketId: string, taskId: string, payload: Partial<TicketTask>): Observable<TicketTask> {
+    return this.http.put<{ success: boolean; data: TicketTask }>(`${this.baseUrl}/tickets/${ticketId}/tasks/${taskId}`, payload)
+      .pipe(map(response => response.data));
   }
 
-  deleteTask(taskId: string): Observable<{ success: boolean; message: string }> {
-    return this.http.delete<{ success: boolean; message: string }>(`${this.baseUrl}/tasks/${taskId}`);
+  deleteTask(ticketId: string, taskId: string): Observable<{ success: boolean; message: string }> {
+    return this.http.delete<{ success: boolean; message: string }>(`${this.baseUrl}/tickets/${ticketId}/tasks/${taskId}`);
   }
 
-  reorderTasks(ticketId: string, taskIds: string[]): Observable<TicketDetail> {
-    return this.http.patch<{ success: boolean; data: TicketDetail; message: string }>(`${this.baseUrl}/tickets/${ticketId}/tasks/reorder`, { taskIds })
-      .pipe(
-        map(response => response.data)
-      );
+  reorderTasks(ticketId: string, tasks: { id: string; sequence: number }[]): Observable<unknown> {
+    return this.http.patch(`${this.baseUrl}/tickets/${ticketId}/tasks/reorder`, { tasks });
   }
 }

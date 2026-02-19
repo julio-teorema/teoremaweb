@@ -112,12 +112,12 @@
               </div>
               <div class="task-item-meta">
                 @if (task.systems?.length; as hasSystems) {
-                  @if (task.systems![0]; as firstSystem) {
-                  <span class="task-meta-tag">
-                    <i class="pi pi-box"></i>
-                    {{ firstSystem.description }}
-                  </span>
-                  }
+                @if (task.systems![0]; as firstSystem) {
+                <span class="task-meta-tag">
+                  <i class="pi pi-box"></i>
+                  {{ firstSystem.description }}
+                </span>
+                }
                 }
                 @if (task.user; as taskUser) {
                 <span class="task-meta-tag">
@@ -132,7 +132,8 @@
                     [style.background-color]="getProgressColor(getTaskProgress(task.id))">
                   </div>
                 </div>
-                <button class="task-timeentry-btn" (click)="startTimeEntryForTask(task.id)" pTooltip="Iniciar Apontamento" tooltipPosition="top">
+                <button class="task-timeentry-btn" (click)="startTimeEntryForTask(task.id)"
+                  pTooltip="Iniciar Apontamento" tooltipPosition="top">
                   <i class="pi pi-play"></i>
                 </button>
               </div>
@@ -164,7 +165,7 @@
   <!-- Task Management Modal -->
   @if (ticket(); as currentTicket) {
   <app-task-management-modal [ticket]="currentTicket" [(visible)]="showTaskModal"
-    (ticketUpdated)="onTaskModalTicketUpdated($event)" (startTimeEntry)="onTaskStartTimeEntry($event)" />
+    (tasksUpdated)="onTasksUpdated($event)" (startTimeEntry)="onTaskStartTimeEntry($event)" />
   }
   }
 </p-dialog>

@@ -6,10 +6,18 @@
     --urgent-bg-soft: #fff5f5;
     --urgent-border: #fecaca;
 
+    :root.dark &,
+    .dark & {
+      --urgent-bg-strong: color-mix(in srgb, var(--state-danger) 35%, #000);
+      --urgent-bg-soft: color-mix(in srgb, var(--state-danger) 12%, #000);
+      --urgent-border: color-mix(in srgb, var(--state-danger) 50%, #000);
+    }
+
     background: var(--urgent-bg-soft);
     border: 1px solid var(--urgent-border);
     box-shadow: 0 8px 32px rgba(239, 68, 68, 0.25);
-    transition: background 0.2s ease, box-shadow 0.2s ease;
+    transition: background 0.2s ease,
+    box-shadow 0.2s ease;
 
     &>.p-dialog-header {
       background: var(--urgent-bg-strong);
