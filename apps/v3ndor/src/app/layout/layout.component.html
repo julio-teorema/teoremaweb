@@ -34,10 +34,14 @@
         @if (!sidebarCollapsed() && expandedMenus().has(item.label)) {
         <div class="nav-children">
           @for (child of item.children; track child.route) {
-          <a class="nav-item nav-child" [routerLink]="child.route" routerLinkActive="active" (click)="closeMobileMenu()"
+          <a class="nav-item nav-child" [routerLink]="child.disabled ? null : child.route" routerLinkActive="active"
+            [class.disabled]="child.disabled" (click)="child.disabled ? $event.preventDefault() : closeMobileMenu()"
             [title]="child.label">
             <i [class]="child.icon"></i>
             <span>{{ child.label }}</span>
+            @if (child.badge) {
+            <span class="nav-badge">{{ child.badge }}</span>
+            }
           </a>
           }
         </div>
@@ -46,9 +50,13 @@
         <div class="nav-flyout">
           <div class="nav-flyout-title">{{ item.label }}</div>
           @for (child of item.children; track child.route) {
-          <a class="nav-flyout-item" [routerLink]="child.route" routerLinkActive="active" (click)="closeMobileMenu()">
+          <a class="nav-flyout-item" [routerLink]="child.disabled ? null : child.route" routerLinkActive="active"
+            [class.disabled]="child.disabled" (click)="child.disabled ? $event.preventDefault() : closeMobileMenu()">
             <i [class]="child.icon"></i>
             <span>{{ child.label }}</span>
+            @if (child.badge) {
+            <span class="nav-badge">{{ child.badge }}</span>
+            }
           </a>
           }
         </div>

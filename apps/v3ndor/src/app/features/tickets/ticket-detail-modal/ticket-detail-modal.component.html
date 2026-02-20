@@ -93,7 +93,7 @@
         }
 
         <!-- Tarefas -->
-        @if (t.tasks.length) {
+        @if (t && t.tasks.length) {
         <div class="content-section">
           <h3 class="content-section-title">
             <i class="pi pi-check-square"></i>
@@ -112,18 +112,33 @@
                 }
               </div>
               <div class="task-item-meta">
-                @if (task.systems?.length; as hasSystems) {
-                  @if (task.systems![0]; as firstSystem) {
-                  <span class="task-meta-tag">
-                    <i class="pi pi-box"></i>
-                    {{ firstSystem.description }}
-                  </span>
-                  }
-                }
                 @if (task.user; as taskUser) {
                 <span class="task-meta-tag">
                   <i class="pi pi-user"></i>
                   {{ taskUser.name }}
+                </span>
+                }
+                @if (task.systems && task.systems.length > 0) {
+                <span class="task-meta-tag">
+                  <i class="pi pi-box"></i>
+                  {{ task.systems[0].description }}
+                </span>
+                }
+                @if (task.estimated_effort) {
+                <span class="task-meta-tag">
+                  <i class="pi pi-bolt"></i>
+                  {{ task.estimated_effort }} pt(s)
+                </span>
+                }
+                @if (task.expected_date) {
+                <span class="task-meta-tag">
+                  <i class="pi pi-calendar"></i>
+                  {{ formatDate(task.expected_date) }}
+                </span>
+                }
+                @if (task.difficulty) {
+                <span class="task-meta-tag task-difficulty" [ngClass]="getDifficultyClass(task.difficulty)">
+                  {{ getDifficultyLabel(task.difficulty) }}
                 </span>
                 }
               </div>
@@ -133,7 +148,8 @@
                     [style.background-color]="getProgressColor(getTaskProgress(task.id))">
                   </div>
                 </div>
-                <button class="task-timeentry-btn" (click)="startTimeEntryForTask(task.id)" pTooltip="Iniciar Apontamento" tooltipPosition="top">
+                <button class="task-timeentry-btn" (click)="startTimeEntryForTask(task.id)"
+                  pTooltip="Iniciar Apontamento" tooltipPosition="top">
                   <i class="pi pi-play"></i>
                 </button>
               </div>
@@ -165,7 +181,7 @@
   <!-- Task Management Modal -->
   @if (ticket(); as currentTicket) {
   <app-task-management-modal [ticket]="currentTicket" [(visible)]="showTaskModal"
-    (ticketUpdated)="onTaskModalTicketUpdated($event)" (startTimeEntry)="onTaskStartTimeEntry($event)" />
+    (tasksUpdated)="onTasksUpdated($event)" (startTimeEntry)="onTaskStartTimeEntry($event)" />
   }
   }
 </p-dialog>

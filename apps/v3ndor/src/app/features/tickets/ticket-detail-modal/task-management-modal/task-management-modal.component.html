@@ -25,7 +25,9 @@
       <div class="task-items">
         @for (task of tasks(); track task.id; let i = $index) {
         <div class="task-card" [class.task-finished]="task.finished" [class.dragging]="draggedIndex() === i"
-          draggable="true" (dragstart)="onDragStart(i)" (dragover)="onDragOver($event)" (drop)="onDrop(i)"
+          [class.drop-target-top]="dropTarget()?.index === i && dropTarget()?.position === 'top'"
+          [class.drop-target-bottom]="dropTarget()?.index === i && dropTarget()?.position === 'bottom'" draggable="true"
+          (dragstart)="onDragStart(i)" (dragover)="onDragOver($event, i)" (dragleave)="onDragLeave()" (drop)="onDrop()"
           (dragend)="onDragEnd()">
           <div class="task-drag-handle">
             <i class="pi pi-bars"></i>
@@ -58,16 +60,22 @@
                 {{ taskUser.name }}
               </span>
               }
+              @if (task.estimated_effort) {
+              <span class="task-effort">
+                <i class="pi pi-bolt"></i>
+                {{ task.estimated_effort }} pt(s)
+              </span>
+              }
               @if (task.expected_date) {
               <span class="task-date">
                 <i class="pi pi-calendar"></i>
                 {{ formatDate(task.expected_date) }}
               </span>
               }
-              @if (task.estimated_effort) {
-              <span class="task-effort">
-                <i class="pi pi-bolt"></i>
-                {{ task.estimated_effort }} pt(s)
+              @if (task.systems && task.systems.length > 0) {
+              <span class="task-system">
+                <i class="pi pi-box"></i>
+                {{ task.systems[0].description }}
               </span>
               }
             </div>
@@ -87,8 +95,7 @@
               (click)="onStartTimeEntry(task.id)">
               <i class="pi pi-play"></i>
             </button>
-            <button class="task-action-btn" pTooltip="Editar" tooltipPosition="top"
-              (click)="openEditTaskForm(task)">
+            <button class="task-action-btn" pTooltip="Editar" tooltipPosition="top" (click)="openEditTaskForm(task)">
               <i class="pi pi-pencil"></i>
             </button>
             <button class="task-action-btn btn-danger" pTooltip="Excluir" tooltipPosition="top"
@@ -143,9 +150,8 @@
                 Desenvolvedor Responsável
                 <span class="required">*</span>
               </span>
-              <p-select [options]="userOptions()" [(ngModel)]="formUserId" optionLabel="label"
-                optionValue="value" placeholder="Selecione o desenvolvedor" class="w-full" appendTo="body"
-                [style]="{ 'z-index': 1106 }" />
+              <p-select [options]="userOptions()" [(ngModel)]="formUserId" optionLabel="label" optionValue="value"
+                placeholder="Selecione o desenvolvedor" class="w-full" appendTo="body" [style]="{ 'z-index': 1106 }" />
             </div>
           </div>
 
@@ -156,16 +162,15 @@
                 <span class="required">*</span>
               </span>
               <input pInputText type="number" [ngModel]="formEstimatedEffort()"
-                (ngModelChange)="formEstimatedEffort.set($event)" placeholder="1 ponto = 4 horas"
-                class="w-full" />
+                (ngModelChange)="formEstimatedEffort.set($event)" placeholder="1 ponto = 4 horas" class="w-full" />
             </div>
           </div>
 
           <div class="col-6">
             <div class="field-group">
               <span class="field-label">Data de Previsão</span>
-              <p-datepicker [(ngModel)]="formExpectedDate" placeholder="Selecione a data" class="w-full"
-                appendTo="body" [style]="{ 'z-index': 1103 }" />
+              <p-datepicker [(ngModel)]="formExpectedDate" placeholder="Selecione a data" class="w-full" appendTo="body"
+                [style]="{ 'z-index': 1103 }" />
             </div>
           </div>
 
@@ -184,9 +189,8 @@
                 Status
                 <span class="required">*</span>
               </span>
-              <p-select [options]="statusOptions" [(ngModel)]="formStatusId" optionLabel="label"
-                optionValue="value" placeholder="Selecione o status" class="w-full" appendTo="body"
-                [style]="{ 'z-index': 1105 }" />
+              <p-select [options]="statusOptions" [(ngModel)]="formStatusId" optionLabel="label" optionValue="value"
+                placeholder="Selecione o status" class="w-full" appendTo="body" [style]="{ 'z-index': 1105 }" />
             </div>
           </div>
 
@@ -201,7 +205,8 @@
       @if (showForm()) {
       <p-button label="Cancelar" icon="pi pi-times" severity="secondary" (onClick)="closeForm()" />
       <p-button label="Salvar" icon="pi pi-check" severity="success" [loading]="saving()"
-        [disabled]="!formSummary().trim() || !formDescription().trim() || !formStatusId() || !formUserId() || !formEstimatedEffort()" (onClick)="saveTask()" />
+        [disabled]="!formSummary().trim() || !formDescription().trim() || !formStatusId() || !formUserId() || !formEstimatedEffort()"
+        (onClick)="saveTask()" />
       } @else {
       <p-button label="Fechar" icon="pi pi-times" severity="secondary" (onClick)="onHide()" />
       }

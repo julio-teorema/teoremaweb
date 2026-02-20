@@ -63,6 +63,27 @@
 }
 
 .task-card {
+  position: relative;
+
+  &.drop-target-top::before,
+  &.drop-target-bottom::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--color-primary-blue);
+    z-index: 1;
+  }
+
+  &.drop-target-top::before {
+    top: -2px;
+  }
+
+  &.drop-target-bottom::after {
+    bottom: -2px;
+  }
+
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;

@@ -351,6 +351,26 @@ $header-height: 56px;
   }
 }
 
+.nav-badge {
+  margin-left: auto;
+  font-size: 0.625rem;
+  background: var(--sidebar-active-bg);
+  color: var(--sidebar-active-color);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.nav-item.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+
+  &:hover {
+    background: transparent !important;
+    color: var(--sidebar-text) !important;
+  }
+}
+
 .header-right {
   display: flex;
   align-items: center;
