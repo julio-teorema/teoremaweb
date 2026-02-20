@@ -60,16 +60,22 @@
                 {{ taskUser.name }}
               </span>
               }
+              @if (task.estimated_effort) {
+              <span class="task-effort">
+                <i class="pi pi-bolt"></i>
+                {{ task.estimated_effort }} pt(s)
+              </span>
+              }
               @if (task.expected_date) {
               <span class="task-date">
                 <i class="pi pi-calendar"></i>
                 {{ formatDate(task.expected_date) }}
               </span>
               }
-              @if (task.estimated_effort) {
-              <span class="task-effort">
-                <i class="pi pi-bolt"></i>
-                {{ task.estimated_effort }} pt(s)
+              @if (task.systems && task.systems.length > 0) {
+              <span class="task-system">
+                <i class="pi pi-box"></i>
+                {{ task.systems[0].description }}
               </span>
               }
             </div>
@@ -151,7 +157,10 @@
 
           <div class="col-6">
             <div class="field-group">
-              <span class="field-label">Esforço Estimado (pontos)</span>
+              <span class="field-label">
+                Esforço Estimado (pontos)
+                <span class="required">*</span>
+              </span>
               <input pInputText type="number" [ngModel]="formEstimatedEffort()"
                 (ngModelChange)="formEstimatedEffort.set($event)" placeholder="1 ponto = 4 horas" class="w-full" />
             </div>
@@ -196,7 +205,7 @@
       @if (showForm()) {
       <p-button label="Cancelar" icon="pi pi-times" severity="secondary" (onClick)="closeForm()" />
       <p-button label="Salvar" icon="pi pi-check" severity="success" [loading]="saving()"
-        [disabled]="!formSummary().trim() || !formDescription().trim() || !formStatusId() || !formUserId()"
+        [disabled]="!formSummary().trim() || !formDescription().trim() || !formStatusId() || !formUserId() || !formEstimatedEffort()"
         (onClick)="saveTask()" />
       } @else {
       <p-button label="Fechar" icon="pi pi-times" severity="secondary" (onClick)="onHide()" />

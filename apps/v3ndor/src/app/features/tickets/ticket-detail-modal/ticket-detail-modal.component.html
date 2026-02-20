@@ -93,7 +93,7 @@
         }
 
         <!-- Tarefas -->
-        @if (t.tasks.length) {
+        @if (t && t.tasks.length) {
         <div class="content-section">
           <h3 class="content-section-title">
             <i class="pi pi-check-square"></i>
@@ -103,6 +103,7 @@
             @for (task of getSortedTasks(); track task.id) {
             <div class="task-item" [class.task-finished]="task.finished">
               <div class="task-item-header">
+                <p-checkbox [ngModel]="task.finished" [binary]="true" (onChange)="toggleTaskFinished(task)" />
                 <span class="task-summary" [class.task-done]="task.finished">
                   {{ task.summary || task.description }}
                 </span>
@@ -111,18 +112,33 @@
                 }
               </div>
               <div class="task-item-meta">
-                @if (task.systems?.length; as hasSystems) {
-                @if (task.systems![0]; as firstSystem) {
-                <span class="task-meta-tag">
-                  <i class="pi pi-box"></i>
-                  {{ firstSystem.description }}
-                </span>
-                }
-                }
                 @if (task.user; as taskUser) {
                 <span class="task-meta-tag">
                   <i class="pi pi-user"></i>
                   {{ taskUser.name }}
+                </span>
+                }
+                @if (task.systems && task.systems.length > 0) {
+                <span class="task-meta-tag">
+                  <i class="pi pi-box"></i>
+                  {{ task.systems[0].description }}
+                </span>
+                }
+                @if (task.estimated_effort) {
+                <span class="task-meta-tag">
+                  <i class="pi pi-bolt"></i>
+                  {{ task.estimated_effort }} pt(s)
+                </span>
+                }
+                @if (task.expected_date) {
+                <span class="task-meta-tag">
+                  <i class="pi pi-calendar"></i>
+                  {{ formatDate(task.expected_date) }}
+                </span>
+                }
+                @if (task.difficulty) {
+                <span class="task-meta-tag task-difficulty" [ngClass]="getDifficultyClass(task.difficulty)">
+                  {{ getDifficultyLabel(task.difficulty) }}
                 </span>
                 }
               </div>

@@ -159,11 +159,15 @@ export class TicketDetailModalComponent implements OnChanges {
     this.cdr.markForCheck(); // Forçar detecção de mudanças
   }
 
-  onTicketUpdated(ticket: TicketDetail): void {
-    this.ticket.set(ticket);
-    this.timelineEntries.set(this.buildTimeline(ticket));
-    this.ticketUpdated.emit(ticket);
-    this.cdr.markForCheck(); // Forçar detecção de mudanças
+  onTicketUpdated(updatedInfo: Partial<TicketDetail>): void {
+    const currentTicket = this.ticket();
+    if (currentTicket) {
+      const newTicketState = { ...currentTicket, ...updatedInfo };
+      this.ticket.set(newTicketState);
+      this.timelineEntries.set(this.buildTimeline(newTicketState));
+      this.ticketUpdated.emit(newTicketState);
+      this.cdr.markForCheck();
+    }
   }
 
   private loadTicket(id: string): void {
@@ -371,7 +375,8 @@ export class TicketDetailModalComponent implements OnChanges {
   }
 
   getSortedTasks(): TicketTask[] {
-    return this.ticket()?.tasks ?? [];
+    const tasks = this.ticket()?.tasks ?? [];
+    return [...tasks];
   }
 
   getTotalTaskPoints(): number {
@@ -384,6 +389,47 @@ export class TicketDetailModalComponent implements OnChanges {
     this.showTaskModal.set(true);
   }
 
+  toggleTaskFinished(task: TicketTask): void {
+    const currentTicket = this.ticket();
+    if (!currentTicket?.id || !currentTicket.tasks) return;
+
+    const taskIndex = currentTicket.tasks.findIndex(t => t.id === task.id);
+    if (taskIndex === -1) return;
+
+    // Otimista: atualiza a UI imediatamente
+    const newTasks = [...currentTicket.tasks];
+    const newFinishedState = !newTasks[taskIndex].finished;
+    newTasks[taskIndex] = { ...newTasks[taskIndex], finished: newFinishedState };
+    const optimisticTicketState: TicketDetail = { ...currentTicket, tasks: newTasks };
+
+    this.ticket.set(optimisticTicketState);
+    this.timelineEntries.set(this.buildTimeline(optimisticTicketState));
+    this.cdr.markForCheck();
+
+    // Sincroniza com o backend
+    this.ticketService.updateTask(currentTicket.id, task.id, { finished: newFinishedState }).subscribe({
+      next: (updatedTask) => {
+        const ticketState = this.ticket();
+        if (!ticketState?.tasks) return;
+
+        const finalTasks = ticketState.tasks.map(t => t.id === updatedTask.id ? updatedTask : t);
+        const finalTicketState: TicketDetail = { ...ticketState, tasks: finalTasks };
+
+        this.ticket.set(finalTicketState);
+        this.timelineEntries.set(this.buildTimeline(finalTicketState));
+        this.ticketUpdated.emit(finalTicketState);
+        this.loadTaskProgress(finalTicketState);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        // Reverte em caso de erro
+        this.ticket.set(currentTicket);
+        this.timelineEntries.set(this.buildTimeline(currentTicket));
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
   startTimeEntryForTask(taskId: string): void {
     this.onTaskStartTimeEntry(taskId);
   }
@@ -391,8 +437,12 @@ export class TicketDetailModalComponent implements OnChanges {
   onTasksUpdated(tasks: TicketTask[]): void {
     const currentTicket = this.ticket();
     if (currentTicket) {
-      const updatedTicket = { ...currentTicket, tasks };
-      this.onTicketUpdated(updatedTicket);
+      const updatedTicket: TicketDetail = { ...currentTicket, tasks };
+      this.ticket.set(updatedTicket);
+      this.timelineEntries.set(this.buildTimeline(updatedTicket));
+      this.ticketUpdated.emit(updatedTicket);
+      this.loadTaskProgress(updatedTicket);
+      this.cdr.markForCheck();
     }
   }
 
@@ -402,5 +452,32 @@ export class TicketDetailModalComponent implements OnChanges {
     if (this.actionBarRef) {
       this.actionBarRef.openTimeEntryModal(taskId);
     }
+  }
+
+  formatDate(dateString: string | Date): string {
+    if (!dateString) return '';
+    try {
+      const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+      return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    } catch {
+      return '';
+    }
+  }
+
+  getDifficultyLabel(difficulty: string | null): string {
+    if (!difficulty) return '';
+    const labels: Record<string, string> = {
+      '1': 'Muito Baixa',
+      '2': 'Baixa',
+      '3': 'Média',
+      '4': 'Alta',
+      '5': 'Muito Alta',
+    };
+    return labels[difficulty] || '';
+  }
+
+  getDifficultyClass(difficulty: string | null): string {
+    if (!difficulty) return 'difficulty-unknown';
+    return `difficulty-${difficulty}`;
   }
 }
